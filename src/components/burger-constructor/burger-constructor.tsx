@@ -3,20 +3,18 @@ import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
 
 export const BurgerConstructor: FC = () => {
-  /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
+  // ✅ булка = null, пока не выбрана
   const constructorItems = {
-    bun: {
-      price: 0
-    },
-    ingredients: []
+    bun: null as TConstructorIngredient | null,
+    ingredients: [] as TConstructorIngredient[]
   };
 
   const orderRequest = false;
-
   const orderModalData = null;
 
   const onOrderClick = () => {
     if (!constructorItems.bun || orderRequest) return;
+    // оформить заказ…
   };
   const closeOrderModal = () => {};
 
@@ -29,8 +27,6 @@ export const BurgerConstructor: FC = () => {
       ),
     [constructorItems]
   );
-
-  return null;
 
   return (
     <BurgerConstructorUI
