@@ -1,5 +1,5 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import type { RootState } from '../store';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import type { RootState } from '../root-reducer';
 import { getIngredientsApi } from '../../utils/burger-api';
 import type { TIngredient } from '../../utils/types';
 
@@ -15,12 +15,12 @@ const initialState: State = {
   error: null
 };
 
-// Thunk: тянем данные с сервера
-export const fetchIngredients = createAsyncThunk(
+// ЯВНО типизируем payload санки
+export const fetchIngredients = createAsyncThunk<TIngredient[]>(
   'ingredients/fetch',
   async () => {
-    const data = await getIngredientsApi(); // вернёт TIngredient[]
-    return data;
+    const data = await getIngredientsApi();
+    return data; // TIngredient[]
   }
 );
 
@@ -33,13 +33,10 @@ const ingredientsSlice = createSlice({
       state.loading = true;
       state.error = null;
     });
-    b.addCase(
-      fetchIngredients.fulfilled,
-      (state, { payload }: PayloadAction<TIngredient[]>) => {
-        state.loading = false;
-        state.data = payload;
-      }
-    );
+    b.addCase(fetchIngredients.fulfilled, (state, { payload }) => {
+      state.loading = false;
+      state.data = payload;
+    });
     b.addCase(fetchIngredients.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error.message || 'Не удалось загрузить ингредиенты';
@@ -47,7 +44,7 @@ const ingredientsSlice = createSlice({
   }
 });
 
-// Селекторы
+// Селекторы (ключи должны совпадать с combineReducers в root-reducer)
 export const selectIngredients = (s: RootState) => s.ingredients.data;
 export const selectIngredientsLoading = (s: RootState) => s.ingredients.loading;
 export const selectIngredientsError = (s: RootState) => s.ingredients.error;
