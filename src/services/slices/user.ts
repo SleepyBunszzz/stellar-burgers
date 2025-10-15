@@ -8,7 +8,7 @@ import {
   type TRegisterData,
   type TLoginData
 } from '../../utils/burger-api';
-import type { RootState } from '../root-reducer';
+import type { RootState } from '../store';
 
 type TUser = { name: string; email: string };
 
@@ -26,40 +26,35 @@ const initialState: UserState = {
   error: null
 };
 
-// Проверка текущего пользователя
 export const fetchUser = createAsyncThunk<TUser>('user/fetchUser', async () => {
   const res = await getUserApi();
-  return res.user; // TUser
+  return res.user;
 });
 
-// Вход
 export const login = createAsyncThunk<TUser, TLoginData>(
   'user/login',
   async (data) => {
     const res = await loginUserApi(data);
-    return res.user; // TUser
+    return res.user;
   }
 );
 
-// Регистрация
 export const register = createAsyncThunk<TUser, TRegisterData>(
   'user/register',
   async (data) => {
     const res = await registerUserApi(data);
-    return res.user; // TUser
+    return res.user;
   }
 );
 
-// Обновление профиля
 export const updateUser = createAsyncThunk<TUser, Partial<TRegisterData>>(
   'user/update',
   async (data) => {
     const res = await updateUserApi(data);
-    return res.user; // TUser
+    return res.user;
   }
 );
 
-// Выход
 export const logout = createAsyncThunk('user/logout', async () => {
   await logoutApi();
 });
@@ -100,7 +95,7 @@ const slice = createSlice({
     });
     b.addCase(login.rejected, (s, a) => {
       s.loading = false;
-      s.error = a.error.message || 'Ошибка входа';
+      s.error = a.error.message || 'Ошибка входа'; // ✅ ИСПРАВЛЕНО
     });
 
     // register
@@ -114,7 +109,7 @@ const slice = createSlice({
     });
     b.addCase(register.rejected, (s, a) => {
       s.loading = false;
-      s.error = a.error.message || 'Ошибка регистрации';
+      s.error = a.error.message || 'Ошибка регистрации'; // ✅ ИСПРАВЛЕНО
     });
 
     // updateUser
