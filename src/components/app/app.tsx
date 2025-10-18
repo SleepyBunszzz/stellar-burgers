@@ -7,6 +7,7 @@ import { fetchIngredients } from '../../services/slices/ingredients';
 import { fetchUser } from '../../services/slices/user';
 import { selectIngredients } from '../../services/slices/ingredients';
 import { getCookie } from '../../utils/cookie';
+import { setAuthChecked } from '../../services/slices/user';
 
 import { AppHeader, Modal, OrderInfo, IngredientDetails } from '@components';
 import {
@@ -29,23 +30,22 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const ingredients = useSelector(selectIngredients);
-  const hasFetched = useRef(false); // ✅ Флаг для однократной загрузки
+  const hasFetched = useRef(false);
 
   const state = location.state as { background?: Location };
 
   useEffect(() => {
-    // ✅ Загружаем только один раз при монтировании
     if (!hasFetched.current) {
       if (ingredients.length === 0) {
         dispatch(fetchIngredients());
       }
-
       const accessToken = getCookie('accessToken');
       if (accessToken) {
         dispatch(fetchUser());
+      } else {
+        dispatch(setAuthChecked(true));
       }
-
-      hasFetched.current = true; // ✅ Помечаем что загрузили
+      hasFetched.current = true;
     }
   }, [dispatch, ingredients.length]);
 

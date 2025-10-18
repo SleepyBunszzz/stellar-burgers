@@ -1,5 +1,5 @@
 import { ProfileUI } from '@ui-pages';
-import { FC, SyntheticEvent, useEffect, useState } from 'react';
+import { FC, SyntheticEvent, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from '../../services/store';
 import { fetchUser, updateUser, selectUser } from '../../services/slices/user';
 
@@ -13,25 +13,28 @@ export const Profile: FC = () => {
     password: ''
   });
 
-  // ✅ Всегда загружаем пользователя при монтировании
-  useEffect(() => {
-    dispatch(fetchUser());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(fetchUser());
+  // }, [dispatch]);
 
-  // ✅ Синхронизация формы когда user загружен
+  const isFormChanged = useMemo(() => {
+    if (!user) return false;
+    return (
+      formValue.name !== user.name ||
+      formValue.email !== user.email ||
+      !!formValue.password
+    );
+  }, [formValue.name, formValue.email, formValue.password, user]);
+
   useEffect(() => {
-    if (user) {
+    if (user && !isFormChanged) {
       setFormValue({
         name: user.name,
         email: user.email,
         password: ''
       });
     }
-  }, [user]);
-
-  const isFormChanged = formValue.name !== user?.name;
-  formValue.email !== user?.email;
-  !!formValue.password;
+  }, [user, isFormChanged]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -44,7 +47,6 @@ export const Profile: FC = () => {
 
     const payload: Partial<{ name: string; email: string; password: string }> =
       {};
-
     if (formValue.name !== user.name) payload.name = formValue.name;
     if (formValue.email !== user.email) payload.email = formValue.email;
     if (formValue.password) payload.password = formValue.password;
@@ -52,9 +54,7 @@ export const Profile: FC = () => {
     try {
       await dispatch(updateUser(payload)).unwrap();
       setFormValue((prev) => ({ ...prev, password: '' }));
-    } catch (err) {
-      console.error('Update user failed:', err);
-    }
+    } catch {}
   };
 
   const handleCancel = (e: SyntheticEvent) => {

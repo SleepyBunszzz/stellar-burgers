@@ -1,9 +1,15 @@
 import { FC, useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useSelector } from '../../services/store';
+import { selectUser } from '../../services/slices/user';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
 
 export const BurgerConstructor: FC = () => {
-  // ✅ булка = null, пока не выбрана
+  const user = useSelector(selectUser);
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const constructorItems = {
     bun: null as TConstructorIngredient | null,
     ingredients: [] as TConstructorIngredient[]
@@ -13,9 +19,13 @@ export const BurgerConstructor: FC = () => {
   const orderModalData = null;
 
   const onOrderClick = () => {
+    if (!user) {
+      navigate('/login', { state: { from: location } });
+      return;
+    }
     if (!constructorItems.bun || orderRequest) return;
-    // оформить заказ…
   };
+
   const closeOrderModal = () => {};
 
   const price = useMemo(
