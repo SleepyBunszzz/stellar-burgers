@@ -7,20 +7,35 @@ type State = {
   data: TIngredient[];
   loading: boolean;
   error: string | null;
+  fetched: boolean;
 };
 
 const initialState: State = {
   data: [],
   loading: false,
-  error: null
+  error: null,
+  fetched: false
 };
 
-// ЯВНО типизируем payload санки
-export const fetchIngredients = createAsyncThunk<TIngredient[]>(
+export const fetchIngredients = createAsyncThunk<
+  TIngredient[],
+  void,
+  { state: RootState }
+>(
   'ingredients/fetch',
   async () => {
     const data = await getIngredientsApi();
-    return data; // TIngredient[]
+    return data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const state = getState();
+      const { loading, fetched } = state.ingredients;
+      if (loading || fetched) {
+        return false;
+      }
+      return true;
+    }
   }
 );
 
@@ -36,6 +51,7 @@ const ingredientsSlice = createSlice({
     b.addCase(fetchIngredients.fulfilled, (state, { payload }) => {
       state.loading = false;
       state.data = payload;
+      state.fetched = true;
     });
     b.addCase(fetchIngredients.rejected, (state, action) => {
       state.loading = false;
@@ -44,9 +60,9 @@ const ingredientsSlice = createSlice({
   }
 });
 
-// Селекторы (ключи должны совпадать с combineReducers в root-reducer)
 export const selectIngredients = (s: RootState) => s.ingredients.data;
 export const selectIngredientsLoading = (s: RootState) => s.ingredients.loading;
 export const selectIngredientsError = (s: RootState) => s.ingredients.error;
+export const selectIngredientsFetched = (s: RootState) => s.ingredients.fetched;
 
 export default ingredientsSlice.reducer;

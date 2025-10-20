@@ -12,7 +12,9 @@ export const ProfileMenu: FC = () => {
 
   const handleLogout = async () => {
     try {
-      await dispatch(logout()).unwrap?.();
+      await dispatch(logout()).unwrap();
+    } catch (error) {
+      console.error('Ошибка при выходе из профиля:', error);
     } finally {
       deleteCookie('accessToken');
       deleteCookie('refreshToken');

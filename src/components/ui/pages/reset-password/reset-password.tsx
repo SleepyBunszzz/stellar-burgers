@@ -26,7 +26,9 @@ export const ResetPasswordUI: FC<ResetPasswordUIProps> = ({
       >
         <div className='pb-6'>
           <PasswordInput
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(v: any) =>
+              setPassword(typeof v === 'string' ? v : v?.target?.value ?? '')
+            }
             value={password}
             name='password'
           />
@@ -35,16 +37,24 @@ export const ResetPasswordUI: FC<ResetPasswordUIProps> = ({
           <Input
             type='text'
             placeholder='Введите код из письма'
-            onChange={(e) => setToken(e.target.value)}
+            onChange={(v: any) =>
+              setToken(typeof v === 'string' ? v : v?.target?.value ?? '')
+            }
             value={token}
             name='token'
-            error={false}
-            errorText=''
-            size='default'
           />
         </div>
         <div className={`pb-6 ${styles.button}`}>
-          <Button type='primary' size='medium' htmlType='submit'>
+          <Button
+            type='primary'
+            size='medium'
+            htmlType='submit'
+            onClick={(e) =>
+              (
+                e.currentTarget.closest('form') as HTMLFormElement | null
+              )?.requestSubmit()
+            }
+          >
             Сохранить
           </Button>
         </div>

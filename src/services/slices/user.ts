@@ -92,10 +92,12 @@ const slice = createSlice({
     b.addCase(login.fulfilled, (s, { payload }) => {
       s.loading = false;
       s.user = payload;
+      s.isAuthChecked = true;
     });
     b.addCase(login.rejected, (s, a) => {
       s.loading = false;
       s.error = a.error.message || 'Ошибка входа'; // ✅ ИСПРАВЛЕНО
+      s.isAuthChecked = true;
     });
 
     // register
@@ -106,10 +108,12 @@ const slice = createSlice({
     b.addCase(register.fulfilled, (s, { payload }) => {
       s.loading = false;
       s.user = payload;
+      s.isAuthChecked = true;
     });
     b.addCase(register.rejected, (s, a) => {
       s.loading = false;
       s.error = a.error.message || 'Ошибка регистрации'; // ✅ ИСПРАВЛЕНО
+      s.isAuthChecked = true;
     });
 
     // updateUser

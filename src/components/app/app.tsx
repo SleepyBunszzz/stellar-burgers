@@ -1,13 +1,13 @@
-import { useEffect, useRef } from 'react';
-import React from 'react';
+import { useRef, useEffect } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 
 import { useDispatch, useSelector } from '../../services/store';
-import { fetchIngredients } from '../../services/slices/ingredients';
-import { fetchUser } from '../../services/slices/user';
-import { selectIngredients } from '../../services/slices/ingredients';
+import {
+  fetchIngredients,
+  selectIngredients
+} from '../../services/slices/ingredients';
+import { fetchUser, setAuthChecked } from '../../services/slices/user';
 import { getCookie } from '../../utils/cookie';
-import { setAuthChecked } from '../../services/slices/user';
 
 import { AppHeader, Modal, OrderInfo, IngredientDetails } from '@components';
 import {
@@ -24,34 +24,40 @@ import {
 
 import '../../index.css';
 import styles from './app.module.css';
+import type { Location } from 'react-router-dom';
 
 function App() {
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
   const ingredients = useSelector(selectIngredients);
-  const hasFetched = useRef(false);
+  const didFetchIngredients = useRef(false);
+  const didCheckAuth = useRef(false);
 
-  const state = location.state as { background?: Location };
+  const state = location.state as { background?: Location } | undefined;
 
   useEffect(() => {
-    if (!hasFetched.current) {
-      if (ingredients.length === 0) {
-        dispatch(fetchIngredients());
-      }
-      const accessToken = getCookie('accessToken');
-      if (accessToken) {
-        dispatch(fetchUser());
-      } else {
-        dispatch(setAuthChecked(true));
-      }
-      hasFetched.current = true;
+    if (didFetchIngredients.current) return;
+    didFetchIngredients.current = true;
+
+    if (ingredients.length === 0) {
+      dispatch(fetchIngredients());
     }
   }, [dispatch, ingredients.length]);
 
-  const closeModal = () => {
-    navigate(-1);
-  };
+  useEffect(() => {
+    if (didCheckAuth.current) return;
+    didCheckAuth.current = true;
+
+    const accessToken = getCookie('accessToken');
+    if (accessToken) {
+      dispatch(fetchUser());
+    } else {
+      dispatch(setAuthChecked(true));
+    }
+  }, [dispatch]);
+
+  const closeModal = () => navigate(-1);
 
   return (
     <div className={styles.app}>

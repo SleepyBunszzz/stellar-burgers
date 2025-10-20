@@ -3,9 +3,19 @@ import { TIngredient, TOrder, TOrdersData, TUser } from './types';
 
 const URL = process.env.BURGER_API_URL;
 
-const checkResponse = <T>(res: Response): Promise<T> =>
-  res.ok ? res.json() : res.json().then((err) => Promise.reject(err));
+// Унифицируем ответ: при ошибке пробрасываем и status, и тело
+const checkResponse = async <T>(res: Response): Promise<T> => {
+  let data: any = {};
+  try {
+    data = await res.json();
+  } catch {
+    // тело пустое — оставим {}
+  }
+  if (res.ok) return data as T;
+  throw { status: res.status, ...data };
+};
 
+// Структуры ответов
 type TServerResponse<T> = { success: boolean } & T;
 type TRefreshResponse = TServerResponse<{
   refreshToken: string;
@@ -22,6 +32,17 @@ type TAuthResponse = TServerResponse<{
 }>;
 type TUserResponse = TServerResponse<{ user: TUser }>;
 
+// Нормализуем accessToken из cookie в правильный Authorization
+const buildAuthHeader = () => {
+  const raw = getCookie('accessToken');
+  if (!raw) return {};
+  const value = raw.startsWith('Bearer ') ? raw : `Bearer ${raw}`;
+  return { Authorization: value } as Record<string, string>;
+};
+
+// Превращаем любые HeadersInit в реальный Headers, чтобы безопасно модифицировать
+const toHeaders = (init?: HeadersInit) => new Headers(init || {});
+
 export type TRegisterData = { email: string; name: string; password: string };
 export type TLoginData = { email: string; password: string };
 
@@ -34,6 +55,7 @@ export const refreshToken = (): Promise<TRefreshResponse> =>
     .then((res) => checkResponse<TRefreshResponse>(res))
     .then((refreshData) => {
       if (!refreshData.success) return Promise.reject(refreshData);
+      // Практикум присылает accessToken уже с "Bearer "
       setCookie('refreshToken', refreshData.refreshToken);
       setCookie('accessToken', refreshData.accessToken);
       return refreshData;
@@ -41,28 +63,38 @@ export const refreshToken = (): Promise<TRefreshResponse> =>
 
 export const fetchWithRefresh = async <T>(
   url: RequestInfo,
-  options: RequestInit
+  options: RequestInit = {}
 ): Promise<T> => {
   try {
     const res = await fetch(url, options);
     return await checkResponse<T>(res);
-  } catch (err) {
-    if ((err as { message: string }).message === 'jwt expired') {
-      const refreshData = await refreshToken();
-      if (options.headers) {
-        (options.headers as { [key: string]: string }).authorization =
-          refreshData.accessToken;
-      }
-      const res = await fetch(url, options);
-      return await checkResponse<T>(res);
-    } else {
-      return Promise.reject(err);
+  } catch (err: any) {
+    // Решаем, нужен ли рефреш
+    const shouldRefresh =
+      err?.status === 401 ||
+      err?.message === 'jwt expired' ||
+      err?.message === 'jwt malformed' ||
+      err?.message === 'invalid token';
+
+    if (!shouldRefresh) {
+      throw err;
     }
+
+    const refreshData = await refreshToken();
+
+    // Пересобираем заголовки начального запроса с новым токеном
+    const headers = toHeaders(options.headers);
+    headers.set('Authorization', refreshData.accessToken); // уже "Bearer <jwt>"
+
+    const res2 = await fetch(url, { ...options, headers });
+    return await checkResponse<T>(res2);
   }
 };
 
+// -------- Публичные API-функции --------
+
 export const getIngredientsApi = (): Promise<TIngredient[]> =>
-  fetch(`${URL}/ingredients`)
+  fetch(`${URL}/ingredients`, { method: 'GET' })
     .then((res) => checkResponse<TIngredientsResponse>(res))
     .then((data) => {
       if (data?.success) return data.data;
@@ -70,7 +102,7 @@ export const getIngredientsApi = (): Promise<TIngredient[]> =>
     });
 
 export const getFeedsApi = (): Promise<TOrdersData> =>
-  fetch(`${URL}/orders/all`)
+  fetch(`${URL}/orders/all`, { method: 'GET' })
     .then((res) => checkResponse<TFeedsResponse>(res))
     .then((data) => {
       if (data?.success) return data;
@@ -82,7 +114,7 @@ export const getOrdersApi = (): Promise<TOrder[]> =>
     method: 'GET',
     headers: {
       'Content-Type': 'application/json;charset=utf-8',
-      authorization: getCookie('accessToken') || ''
+      ...buildAuthHeader()
     } as HeadersInit
   }).then((data) => {
     if (data?.success) return data.orders;
@@ -94,7 +126,7 @@ export const orderBurgerApi = (data: string[]): Promise<TNewOrderResponse> =>
     method: 'POST',
     headers: {
       'Content-Type': 'application/json;charset=utf-8',
-      authorization: getCookie('accessToken') || ''
+      ...buildAuthHeader()
     } as HeadersInit,
     body: JSON.stringify({ ingredients: data })
   });
@@ -116,7 +148,7 @@ export const registerUserApi = (data: TRegisterData): Promise<TAuthResponse> =>
     .then((res) => checkResponse<TAuthResponse>(res))
     .then((data) => {
       if (data?.success) {
-        setCookie('accessToken', data.accessToken);
+        setCookie('accessToken', data.accessToken); // уже "Bearer ..."
         setCookie('refreshToken', data.refreshToken);
         return data;
       }
@@ -132,7 +164,7 @@ export const loginUserApi = (data: TLoginData): Promise<TAuthResponse> =>
     .then((res) => checkResponse<TAuthResponse>(res))
     .then((data) => {
       if (data?.success) {
-        setCookie('accessToken', data.accessToken);
+        setCookie('accessToken', data.accessToken); // уже "Bearer ..."
         setCookie('refreshToken', data.refreshToken);
         return data;
       }
@@ -160,7 +192,11 @@ export const resetPasswordApi = (data: {
 
 export const getUserApi = (): Promise<TUserResponse> =>
   fetchWithRefresh<TUserResponse>(`${URL}/auth/user`, {
-    headers: { authorization: getCookie('accessToken') || '' } as HeadersInit
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8',
+      ...buildAuthHeader()
+    } as HeadersInit
   });
 
 export const updateUserApi = (
@@ -170,7 +206,7 @@ export const updateUserApi = (
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json;charset=utf-8',
-      authorization: getCookie('accessToken') || ''
+      ...buildAuthHeader()
     } as HeadersInit,
     body: JSON.stringify(user)
   });

@@ -4,5 +4,5 @@ export type PageUIProps = {
   errorText: string | undefined;
   email: string;
   setEmail: Dispatch<SetStateAction<string>>;
-  handleSubmit: (e: SyntheticEvent) => void;
+  handleSubmit: React.FormEventHandler<HTMLFormElement>;
 };

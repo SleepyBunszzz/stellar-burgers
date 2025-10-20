@@ -1,5 +1,4 @@
 import { FC } from 'react';
-
 import { Button, Input } from '@zlden/react-developer-burger-ui-components';
 import styles from './profile.module.css';
 import commonStyles from '../common.module.css';
@@ -13,7 +12,9 @@ export const ProfileUI: FC<ProfileUIProps> = ({
   updateUserError,
   handleSubmit,
   handleCancel,
-  handleInputChange
+  setName,
+  setEmail,
+  setPassword
 }) => (
   <main className={`${commonStyles.container}`}>
     <div className={`mt-30 mr-15 ${styles.menu}`}>
@@ -26,43 +27,50 @@ export const ProfileUI: FC<ProfileUIProps> = ({
       <>
         <div className='pb-6'>
           <Input
-            type={'text'}
-            placeholder={'Имя'}
-            onChange={handleInputChange}
+            type='text'
+            placeholder='Имя'
+            onChange={(v: any) =>
+              setName(typeof v === 'string' ? v : v?.target?.value ?? '')
+            }
             value={formValue.name}
-            name={'name'}
-            error={false}
-            errorText={''}
-            size={'default'}
-            icon={'EditIcon'}
+            name='name'
+            // error={false}
+            // errorText=''
+            // size='default'
+            icon='EditIcon'
           />
         </div>
         <div className='pb-6'>
           <Input
-            type={'email'}
-            placeholder={'E-mail'}
-            onChange={handleInputChange}
+            type='email'
+            placeholder='E-mail'
+            onChange={(v: any) =>
+              setEmail(typeof v === 'string' ? v : v?.target?.value ?? '')
+            }
             value={formValue.email}
-            name={'email'}
-            error={false}
-            errorText={''}
-            size={'default'}
-            icon={'EditIcon'}
+            name='email'
+            // error={false}
+            // errorText=''
+            // size='default'
+            icon='EditIcon'
           />
         </div>
         <div className='pb-6'>
           <Input
-            type={'password'}
-            placeholder={'Пароль'}
-            onChange={handleInputChange}
+            type='password'
+            placeholder='Пароль'
+            onChange={(v: any) =>
+              setPassword(typeof v === 'string' ? v : v?.target?.value ?? '')
+            }
             value={formValue.password}
-            name={'password'}
-            error={false}
-            errorText={''}
-            size={'default'}
-            icon={'EditIcon'}
+            name='password'
+            // error={false}
+            // errorText=''
+            // size='default'
+            icon='EditIcon'
           />
         </div>
+
         {isFormChanged && (
           <div className={styles.button}>
             <Button
@@ -78,6 +86,7 @@ export const ProfileUI: FC<ProfileUIProps> = ({
             </Button>
           </div>
         )}
+
         {updateUserError && (
           <p
             className={`${commonStyles.error} pt-5 text text_type_main-default`}
