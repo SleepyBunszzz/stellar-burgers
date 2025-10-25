@@ -5,7 +5,7 @@ import styles from './burger-ingredient.module.css';
 import {
   Counter,
   CurrencyIcon,
-  Button
+  AddButton
 } from '@zlden/react-developer-burger-ui-components';
 
 import { TBurgerIngredientUIProps } from './type';
@@ -29,15 +29,11 @@ export const BurgerIngredientUI: FC<TBurgerIngredientUIProps> = memo(
           </div>
           <p className={`text text_type_main-default ${styles.text}`}>{name}</p>
         </Link>
-        <Button
-          htmlType='button'
-          type='primary'
-          size='medium'
+        <AddButton
+          text='Добавить'
           onClick={handleAdd}
           extraClass={`${styles.addButton} mt-8`}
-        >
-          Добавить
-        </Button>
+        />
       </li>
     );
   }

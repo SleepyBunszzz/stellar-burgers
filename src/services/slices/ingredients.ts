@@ -3,14 +3,14 @@ import type { RootState } from '../store';
 import { getIngredientsApi } from '../../utils/burger-api';
 import type { TIngredient } from '../../utils/types';
 
-type State = {
+type IngredientsState = {
   data: TIngredient[];
   loading: boolean;
   error: string | null;
   fetched: boolean;
 };
 
-const initialState: State = {
+const initialState: IngredientsState = {
   data: [],
   loading: false,
   error: null,
@@ -29,8 +29,7 @@ export const fetchIngredients = createAsyncThunk<
   },
   {
     condition: (_, { getState }) => {
-      const state = getState();
-      const { loading, fetched } = state.ingredients;
+      const { loading, fetched } = getState().ingredients;
       if (loading || fetched) {
         return false;
       }
@@ -43,26 +42,36 @@ const ingredientsSlice = createSlice({
   name: 'ingredients',
   initialState,
   reducers: {},
-  extraReducers: (b) => {
-    b.addCase(fetchIngredients.pending, (state) => {
+  extraReducers: (builder) => {
+    builder.addCase(fetchIngredients.pending, (state) => {
       state.loading = true;
       state.error = null;
     });
-    b.addCase(fetchIngredients.fulfilled, (state, { payload }) => {
+    builder.addCase(fetchIngredients.fulfilled, (state, { payload }) => {
       state.loading = false;
       state.data = payload;
       state.fetched = true;
+      state.error = null;
     });
-    b.addCase(fetchIngredients.rejected, (state, action) => {
+    builder.addCase(fetchIngredients.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error.message || 'Не удалось загрузить ингредиенты';
     });
   }
 });
 
-export const selectIngredients = (s: RootState) => s.ingredients.data;
-export const selectIngredientsLoading = (s: RootState) => s.ingredients.loading;
-export const selectIngredientsError = (s: RootState) => s.ingredients.error;
-export const selectIngredientsFetched = (s: RootState) => s.ingredients.fetched;
+// селекторы
+export const selectAllIngredients = (state: RootState) =>
+  state.ingredients.data;
+
+// alias, чтобы не падали компоненты, которые ожидают selectIngredients
+export const selectIngredients = (state: RootState) => state.ingredients.data;
+
+export const selectIngredientsLoading = (state: RootState) =>
+  state.ingredients.loading;
+export const selectIngredientsError = (state: RootState) =>
+  state.ingredients.error;
+export const selectIngredientsFetched = (state: RootState) =>
+  state.ingredients.fetched;
 
 export default ingredientsSlice.reducer;

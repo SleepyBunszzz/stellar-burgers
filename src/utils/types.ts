@@ -1,7 +1,8 @@
+// src/utils/types.ts
 export type TIngredient = {
   _id: string;
   name: string;
-  type: string;
+  type: 'bun' | 'sauce' | 'main'; // уточняем тип сразу
   proteins: number;
   fat: number;
   carbohydrates: number;
@@ -13,17 +14,17 @@ export type TIngredient = {
 };
 
 export type TConstructorIngredient = TIngredient & {
-  id: string;
+  id: string; // локальный uuid при добавлении в конструктор
 };
 
 export type TOrder = {
   _id: string;
-  status: string;
+  status: string; // 'done' | 'pending' | 'created'
   name: string;
   createdAt: string;
   updatedAt: string;
-  number: number;
-  ingredients: string[];
+  number: number; // номер заказа
+  ingredients: string[]; // массив id ингредиентов
 };
 
 export type TOrdersData = {

@@ -96,7 +96,7 @@ const slice = createSlice({
     });
     b.addCase(login.rejected, (s, a) => {
       s.loading = false;
-      s.error = a.error.message || 'Ошибка входа'; // ✅ ИСПРАВЛЕНО
+      s.error = a.error.message || 'Ошибка входа';
       s.isAuthChecked = true;
     });
 
@@ -112,7 +112,7 @@ const slice = createSlice({
     });
     b.addCase(register.rejected, (s, a) => {
       s.loading = false;
-      s.error = a.error.message || 'Ошибка регистрации'; // ✅ ИСПРАВЛЕНО
+      s.error = a.error.message || 'Ошибка регистрации';
       s.isAuthChecked = true;
     });
 

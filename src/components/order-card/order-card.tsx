@@ -17,6 +17,7 @@ export const OrderCard: FC<OrderCardProps> = memo(({ order }) => {
   const orderInfo = useMemo(() => {
     if (!ingredients.length) return null;
 
+    // достаём полную инфу по каждому ингредиенту
     const ingredientsInfo = order.ingredients.reduce(
       (acc: TIngredient[], id: string) => {
         const ing = ingredients.find((i) => i._id === id);
@@ -26,8 +27,13 @@ export const OrderCard: FC<OrderCardProps> = memo(({ order }) => {
       []
     );
 
+    // считаем итоговую стоимость заказа
     const total = ingredientsInfo.reduce((s, v) => s + v.price, 0);
+
+    // для превью в карточке: не больше 6 иконок
     const ingredientsToShow = ingredientsInfo.slice(0, maxIngredients);
+
+    // "+2" и т.п.
     const remains =
       ingredientsInfo.length > maxIngredients
         ? ingredientsInfo.length - maxIngredients
