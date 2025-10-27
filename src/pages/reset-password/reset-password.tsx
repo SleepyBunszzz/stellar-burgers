@@ -6,14 +6,17 @@ import { ResetPasswordUI } from '@ui-pages';
 
 export const ResetPassword: FC = () => {
   const navigate = useNavigate();
-  const [password, setPassword] = useState('');
-  const [token, setToken] = useState('');
+
+  const [password, setPassword] = useState<string>('');
+  const [code, setCode] = useState<string>(''); // код из письма
   const [error, setError] = useState<Error | null>(null);
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
     setError(null);
-    resetPasswordApi({ password, token })
+
+    // API ожидает { password, token }
+    resetPasswordApi({ password, token: code })
       .then(() => {
         localStorage.removeItem('resetPassword');
         navigate('/login');
@@ -29,11 +32,11 @@ export const ResetPassword: FC = () => {
 
   return (
     <ResetPasswordUI
-      errorText={error?.message}
+      errorText={error?.message ?? ''}
       password={password}
-      token={token}
+      code={code}
       setPassword={setPassword}
-      setToken={setToken}
+      setCode={setCode}
       handleSubmit={handleSubmit}
     />
   );

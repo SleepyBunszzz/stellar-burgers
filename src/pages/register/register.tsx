@@ -1,54 +1,46 @@
-import { FC, SyntheticEvent, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from '../../services/store';
-import { RegisterUI } from '@ui-pages';
-import {
-  register,
-  selectUserLoading,
-  selectUser
-} from '../../services/slices/user';
-import { Navigate, useLocation } from 'react-router-dom';
-import type { RootState } from '../../services/store';
+import { FC, useState } from 'react';
+import { useDispatch } from '../../services/store';
+import { register, fetchUser } from '../../services/slices/user';
+import { RegisterUI } from '../../components/ui/pages/register';
+import { useNavigate } from 'react-router-dom';
 
 export const Register: FC = () => {
   const dispatch = useDispatch();
-  const location = useLocation();
-  const loading = useSelector(selectUserLoading);
-  const user = useSelector(selectUser);
-  const error = useSelector((s: RootState) => s.user.error);
+  const navigate = useNavigate();
 
-  const [userName, setUserName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [errorText, setErrorText] = useState<string>('');
 
-  const isValid = useMemo(() => {
-    const okEmail = /\S+@\S+\.\S+/.test(email);
-    const okName = userName.trim().length >= 2;
-    const okPass = password.length >= 6;
-    return okEmail && okName && okPass;
-  }, [email, userName, password]);
-
-  const handleSubmit = async (e: SyntheticEvent) => {
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
-    if (!isValid || loading) return;
-    try {
-      await dispatch(register({ email, name: userName, password })).unwrap();
-    } catch {}
-  };
 
-  if (user) {
-    const from = (location.state as any)?.from?.pathname || '/';
-    return <Navigate to={from} replace />;
-  }
+    if (!name || !email || !password) {
+      setErrorText('Заполните все поля');
+      return;
+    }
+
+    dispatch(register({ name, email, password }))
+      .unwrap()
+      .then(async () => {
+        await dispatch(fetchUser());
+        navigate('/', { replace: true });
+      })
+      .catch((err) =>
+        setErrorText(typeof err === 'string' ? err : 'Ошибка регистрации')
+      );
+  };
 
   return (
     <RegisterUI
-      errorText={error || undefined}
+      name={name}
+      setName={setName}
       email={email}
-      userName={userName}
-      password={password}
       setEmail={setEmail}
+      password={password}
       setPassword={setPassword}
-      setUserName={setUserName}
+      errorText={errorText}
       handleSubmit={handleSubmit}
     />
   );
