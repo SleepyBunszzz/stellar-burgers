@@ -1,36 +1,31 @@
-import { FC, useRef, useState } from 'react';
-import { useDispatch } from '../../services/store';
-import { login, fetchUser } from '../../services/slices/user';
-import { LoginUI } from '../../components/ui/pages/login';
+import { FC, useRef, useState, FormEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from '../../services/store';
+import { login, selectUserLoading } from '../../services/slices/user';
+import { LoginUI } from '../../components/ui/pages/login/login';
 
 export const Login: FC = () => {
   const dispatch = useDispatch();
-  const formRef = useRef<HTMLFormElement>(null);
+  const loading = useSelector(selectUserLoading);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as any)?.from?.pathname || '/';
+
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorText, setErrorText] = useState('');
-  const navigate = useNavigate();
-  const location = useLocation();
-  const from = (location.state as any)?.from?.pathname ?? '/';
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!email || !password) {
-      setErrorText('Введите E-mail и пароль');
-      return;
-    }
+    setErrorText('');
 
     dispatch(login({ email, password }))
       .unwrap()
-      .then(async () => {
-        await dispatch(fetchUser());
-        navigate(from, { replace: true });
-      })
-      .catch((err) =>
-        setErrorText(typeof err === 'string' ? err : 'Ошибка входа')
-      );
+      .then(() => navigate(from, { replace: true }))
+      .catch(() => setErrorText('Неверный e-mail или пароль'));
   };
 
   return (
@@ -45,3 +40,5 @@ export const Login: FC = () => {
     />
   );
 };
+
+export default Login;

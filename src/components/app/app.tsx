@@ -21,6 +21,7 @@ import {
   ProfileOrders,
   NotFound404
 } from '@pages';
+import { ProtectedRoute } from '../protected-route/protected-route';
 
 import '../../index.css';
 import styles from './app.module.css';
@@ -68,13 +69,22 @@ function App() {
         <Route path='/feed' element={<Feed />} />
         <Route path='/feed/:number' element={<OrderInfo />} />
         <Route path='/ingredients/:id' element={<IngredientDetails />} />
+
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
         <Route path='/reset-password' element={<ResetPassword />} />
-        <Route path='/profile' element={<Profile />} />
-        <Route path='/profile/orders' element={<ProfileOrders />} />
+
+        <Route
+          path='/profile'
+          element={<ProtectedRoute element={<Profile />} />}
+        />
+        <Route
+          path='/profile/orders'
+          element={<ProtectedRoute element={<ProfileOrders />} />}
+        />
         <Route path='/profile/orders/:number' element={<OrderInfo />} />
+
         <Route path='*' element={<NotFound404 />} />
       </Routes>
 

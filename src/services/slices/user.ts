@@ -10,44 +10,54 @@ import {
 } from '../../utils/burger-api';
 import type { RootState } from '../store';
 
-type TUser = { name: string; email: string };
+type TUserData = {
+  name: string;
+  email: string;
+};
 
 type UserState = {
-  user: TUser | null;
+  name: string | null;
+  email: string | null;
   isAuthChecked: boolean;
   loading: boolean;
   error: string | null;
 };
 
 const initialState: UserState = {
-  user: null,
+  name: null,
+  email: null,
   isAuthChecked: false,
   loading: false,
   error: null
 };
 
-export const fetchUser = createAsyncThunk<TUser>('user/fetchUser', async () => {
-  const res = await getUserApi();
-  return res.user;
-});
+export const fetchUser = createAsyncThunk<TUserData>(
+  'user/fetchUser',
+  async () => {
+    const me = await getUserApi();
+    return me.user;
+  }
+);
 
-export const login = createAsyncThunk<TUser, TLoginData>(
+export const login = createAsyncThunk<TUserData, TLoginData>(
   'user/login',
   async (data) => {
-    const res = await loginUserApi(data);
-    return res.user;
+    await loginUserApi(data);
+    const me = await getUserApi();
+    return me.user;
   }
 );
 
-export const register = createAsyncThunk<TUser, TRegisterData>(
+export const register = createAsyncThunk<TUserData, TRegisterData>(
   'user/register',
   async (data) => {
-    const res = await registerUserApi(data);
-    return res.user;
+    await registerUserApi(data);
+    const me = await getUserApi();
+    return me.user;
   }
 );
 
-export const updateUser = createAsyncThunk<TUser, Partial<TRegisterData>>(
+export const updateUser = createAsyncThunk<TUserData, Partial<TRegisterData>>(
   'user/update',
   async (data) => {
     const res = await updateUserApi(data);
@@ -75,12 +85,14 @@ const slice = createSlice({
     });
     b.addCase(fetchUser.fulfilled, (s, { payload }) => {
       s.loading = false;
-      s.user = payload;
+      s.name = payload.name;
+      s.email = payload.email;
       s.isAuthChecked = true;
     });
     b.addCase(fetchUser.rejected, (s) => {
       s.loading = false;
-      s.user = null;
+      s.name = null;
+      s.email = null;
       s.isAuthChecked = true;
     });
 
@@ -91,7 +103,8 @@ const slice = createSlice({
     });
     b.addCase(login.fulfilled, (s, { payload }) => {
       s.loading = false;
-      s.user = payload;
+      s.name = payload.name;
+      s.email = payload.email;
       s.isAuthChecked = true;
     });
     b.addCase(login.rejected, (s, a) => {
@@ -107,7 +120,8 @@ const slice = createSlice({
     });
     b.addCase(register.fulfilled, (s, { payload }) => {
       s.loading = false;
-      s.user = payload;
+      s.name = payload.name;
+      s.email = payload.email;
       s.isAuthChecked = true;
     });
     b.addCase(register.rejected, (s, a) => {
@@ -123,7 +137,8 @@ const slice = createSlice({
     });
     b.addCase(updateUser.fulfilled, (s, { payload }) => {
       s.loading = false;
-      s.user = payload;
+      s.name = payload.name;
+      s.email = payload.email;
     });
     b.addCase(updateUser.rejected, (s, a) => {
       s.loading = false;
@@ -132,14 +147,23 @@ const slice = createSlice({
 
     // logout
     b.addCase(logout.fulfilled, (s) => {
-      s.user = null;
+      s.name = null;
+      s.email = null;
+      s.isAuthChecked = true;
     });
   }
 });
 
 export const { setAuthChecked } = slice.actions;
 
-export const selectUser = (s: RootState) => s.user.user;
+// пользователь считается залогиненным только если у нас есть и name, и email
+export const selectUser = (s: RootState) => {
+  if (s.user.name && s.user.email) {
+    return { name: s.user.name, email: s.user.email };
+  }
+  return null;
+};
+
 export const selectUserLoading = (s: RootState) => s.user.loading;
 export const selectAuthChecked = (s: RootState) => s.user.isAuthChecked;
 

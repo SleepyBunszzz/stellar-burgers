@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 import { useDispatch } from '../../services/store';
-import { register, fetchUser } from '../../services/slices/user';
+import { register } from '../../services/slices/user';
 import { RegisterUI } from '../../components/ui/pages/register';
 import { useNavigate } from 'react-router-dom';
 
@@ -23,9 +23,8 @@ export const Register: FC = () => {
 
     dispatch(register({ name, email, password }))
       .unwrap()
-      .then(async () => {
-        await dispatch(fetchUser());
-        navigate('/', { replace: true });
+      .then(() => {
+        navigate('/login', { replace: true });
       })
       .catch((err) =>
         setErrorText(typeof err === 'string' ? err : 'Ошибка регистрации')
