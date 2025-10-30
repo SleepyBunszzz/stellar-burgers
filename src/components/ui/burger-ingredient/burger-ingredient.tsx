@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import styles from './burger-ingredient.module.css';
 import {
   Counter,
-  CurrencyIcon,
-  AddButton
+  CurrencyIcon
 } from '@zlden/react-developer-burger-ui-components';
 import { TBurgerIngredientUIProps } from './type';
 
@@ -27,12 +26,13 @@ export const BurgerIngredientUI: FC<TBurgerIngredientUIProps> = memo(
           </div>
           <p className={`text text_type_main-default ${styles.text}`}>{name}</p>
         </Link>
-
-        <AddButton
-          text='Добавить'
+        <button
+          type='button'
+          className={`text text_type_main-default ${styles.addLink}`}
           onClick={() => handleAdd(ingredient)}
-          extraClass={`${styles.addButton} mt-8`}
-        />
+        >
+          Добавить
+        </button>
       </li>
     );
   }

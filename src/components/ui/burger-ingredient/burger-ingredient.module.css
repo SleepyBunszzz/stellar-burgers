@@ -11,7 +11,7 @@
   width: 260px;
   cursor: pointer;
   text-decoration: none;
-  color: #ffff;
+  color: #fff;
 }
 
 .cost {
@@ -24,7 +24,20 @@
   text-align: center;
 }
 
-.addButton {
+.addLink {
   width: 260px;
-  justify-content: center;
+  margin: 8px 0 0;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  text-align: center;
+  color: #4c4cff;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.addLink:hover,
+.addLink:focus {
+  text-decoration: none;
+  color: #6b6bff;
 }
