@@ -3,11 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from '../../services/store';
 import { selectUser } from '../../services/slices/user';
 import { clearConstructor } from '../../services/slices/constructor';
-import {
-  createOrder,
-  selectCurrentOrder,
-  selectOrderRequest
-} from '../../services/slices/orders';
+import { createOrder, selectOrderRequest } from '../../services/slices/orders';
 import { BurgerConstructorUI } from '@ui';
 
 export const BurgerConstructor: FC = () => {
@@ -17,10 +13,7 @@ export const BurgerConstructor: FC = () => {
 
   const user = useSelector(selectUser);
   const ctor = useSelector((s) => s.burgerConstructor);
-
-  // ✅ теперь используем правильные селекторы
   const orderRequest = useSelector(selectOrderRequest);
-  const orderModalData = useSelector(selectCurrentOrder);
 
   const constructorItems = useMemo(() => {
     const bun = ctor.bun ? { ...ctor.bun, id: ctor.bun.cid } : null;
@@ -51,20 +44,16 @@ export const BurgerConstructor: FC = () => {
     ];
 
     dispatch(createOrder(ingredientIds));
-  };
-
-  const closeOrderModal = () => {
-    dispatch(clearConstructor());
+    // по желанию можно очищать конструктор после успешного заказа в extraReducer createOrder.fulfilled
+    // или здесь через .unwrap().then(() => dispatch(clearConstructor()))
   };
 
   return (
     <BurgerConstructorUI
       price={price}
-      orderRequest={orderRequest}
+      orderRequest={orderRequest} // можно оставить, если UI что-то визуально блокирует
       constructorItems={constructorItems}
-      orderModalData={orderModalData}
       onOrderClick={onOrderClick}
-      closeOrderModal={closeOrderModal}
     />
   );
 };

@@ -1,23 +1,33 @@
 import { OrderCardUI } from '@ui';
 import type { Meta, StoryObj } from '@storybook/react';
+import type { Location as RRLocation } from 'react-router-dom';
 
 const meta = {
   title: 'Example/OrderCard',
   component: OrderCardUI,
-  // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
   tags: ['autodocs'],
-  parameters: {
-    // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
-    layout: 'fullscreen'
-  }
+  parameters: { layout: 'fullscreen' }
 } satisfies Meta<typeof OrderCardUI>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const background: RRLocation = {
+  pathname: '/',
+  search: '',
+  hash: '',
+  state: null,
+  key: 'eitkep27'
+};
+
 export const DefaultOrderCard: Story = {
   args: {
     orderInfo: {
+      _id: '32',
+      number: 3,
+      name: 'Начинка',
+      status: 'ready',
+      date: new Date('2024-01-25'),
       ingredientsInfo: [
         {
           _id: '111',
@@ -48,39 +58,24 @@ export const DefaultOrderCard: Story = {
           image_mobile: ''
         },
         {
-          _id: '111',
+          _id: '222',
           name: 'Начинка',
-          type: 'bun',
-          proteins: 12,
-          fat: 33,
-          carbohydrates: 22,
-          calories: 33,
-          price: 123,
+          type: 'main',
+          proteins: 10,
+          fat: 20,
+          carbohydrates: 15,
+          calories: 50,
+          price: 200,
           image: '',
           image_large: '',
           image_mobile: ''
         }
       ],
       remains: 2,
-      total: 2,
-      date: new Date('2024-01-25'),
-      _id: '32',
-      status: 'ready',
-      name: 'Начинка',
-      createdAt: '',
-      updatedAt: '',
-      number: 3,
-      ingredients: ['Булка', 'Начинка']
+      total: 323
     },
     maxIngredients: 5,
-    locationState: {
-      background: {
-        hash: '',
-        key: 'eitkep27',
-        pathname: '/',
-        search: '',
-        state: null
-      }
-    }
+    showStatus: false,
+    locationState: { background }
   }
 };

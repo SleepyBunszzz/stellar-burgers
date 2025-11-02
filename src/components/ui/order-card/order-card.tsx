@@ -1,75 +1,132 @@
 // src/components/ui/order-card/order-card.tsx
-import React, { FC, memo } from 'react';
-import { Link } from 'react-router-dom';
-import {
-  CurrencyIcon,
-  FormattedDate
-} from '@zlden/react-developer-burger-ui-components';
-import styles from './order-card.module.css';
-import { OrderCardUIProps } from './type';
-import { OrderStatus } from '@components';
+import { Link, useLocation } from 'react-router-dom';
+import type { FC } from 'react';
+// 👇 добавь ЭТО: тип Location из react-router-dom с алиасом
+import type { Location as RRLocation } from 'react-router-dom';
+import { TIngredient } from '@utils-types';
 
-export const OrderCardUI: FC<OrderCardUIProps> = memo(
-  ({ orderInfo, maxIngredients, locationState, showStatus }) => (
+type IngredientThumb = TIngredient;
+
+export type OrderInfoMin = {
+  _id: string;
+  number: number;
+  name: string;
+  status: string;
+  date: Date;
+  ingredientsToShow: IngredientThumb[];
+  remains: number;
+  total: number;
+  ingredientsInfo?: IngredientThumb[];
+};
+
+type Props = {
+  orderInfo: OrderInfoMin;
+  maxIngredients: number;
+  showStatus: boolean;
+  // 👇 тут меняем RouterLocation -> RRLocation
+  locationState?: { background: RRLocation };
+};
+
+export const OrderCardUI: FC<Props> = ({
+  orderInfo,
+  showStatus,
+  locationState
+}) => {
+  const location = useLocation();
+  const to = showStatus
+    ? `/profile/orders/${orderInfo.number}`
+    : `/feed/${orderInfo.number}`;
+
+  return (
     <Link
-      to={orderInfo.number.toString()}
-      relative='path'
-      state={locationState}
-      className={`p-6 mb-4 mr-2 ${styles.order}`}
+      to={to}
+      state={locationState ?? { background: location }}
+      className='text_color_primary'
+      style={{ textDecoration: 'none' }}
     >
-      <div className={styles.order_info}>
-        <span className={`text text_type_digits-default ${styles.number}`}>
-          #{String(orderInfo.number).padStart(6, '0')}
-        </span>
-        <span className='text text_type_main-default text_color_inactive'>
-          <FormattedDate date={orderInfo.date} />
-        </span>
-      </div>
+      <article
+        className='p-6 mb-4'
+        style={{ background: '#1C1C21', borderRadius: 24 }}
+      >
+        <div
+          className='mb-4'
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
+        >
+          <span className='text text_type_digits-default'>
+            #{orderInfo.number}
+          </span>
+          <span className='text text_type_main-default'>
+            {orderInfo.date.toLocaleString()}
+          </span>
+        </div>
 
-      <h4 className={`pt-6 text text_type_main-medium ${styles.order_name}`}>
-        {orderInfo.name}
-      </h4>
+        <h3 className='text text_type_main-medium mb-4'>{orderInfo.name}</h3>
 
-      {showStatus && <OrderStatus status={orderInfo.status} />}
-
-      <div className={`pt-6 ${styles.order_content}`}>
-        <ul className={styles.ingredients}>
-          {orderInfo.ingredientsToShow.map((ingredient, index) => {
-            const zIndex = maxIngredients - index;
-            const right = 20 * index;
-            const isLast = maxIngredients === index + 1;
-            return (
-              <li
-                className={styles.img_wrap}
-                style={{ zIndex, right }}
-                key={`${ingredient._id}-${index}`}
+        <div className='mb-4' style={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{ display: 'flex' }}>
+            {orderInfo.ingredientsToShow.map((i, idx) => (
+              <div
+                key={i._id ?? idx}
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  border: '2px solid #4C4CFF',
+                  marginLeft: idx === 0 ? 0 : -12
+                }}
               >
                 <img
-                  style={{ opacity: orderInfo.remains && isLast ? '0.5' : '1' }}
-                  className={styles.img}
-                  src={ingredient.image_mobile}
-                  alt={ingredient.name}
+                  src={i.image}
+                  alt={i.name}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
-                {isLast && orderInfo.remains > 0 ? (
-                  <span
-                    className={`text text_type_digits-default ${styles.remains}`}
-                  >
-                    +{orderInfo.remains}
-                  </span>
-                ) : null}
-              </li>
-            );
-          })}
-        </ul>
-        <div>
-          <span
-            className={`text text_type_digits-default pr-1 ${styles.order_total}`}
+              </div>
+            ))}
+            {orderInfo.remains > 0 && (
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  border: '2px solid #4C4CFF',
+                  marginLeft: orderInfo.ingredientsToShow.length ? -12 : 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: '#131316'
+                }}
+              >
+                <span className='text text_type_main-default'>
+                  +{orderInfo.remains}
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div
+            style={{
+              marginLeft: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8
+            }}
           >
-            {orderInfo.total}
-          </span>
-          <CurrencyIcon type='primary' />
+            <span className='text text_type_digits-default'>
+              {orderInfo.total}
+            </span>
+          </div>
         </div>
-      </div>
+
+        {showStatus && (
+          <div className='text text_type_main-default'>{orderInfo.status}</div>
+        )}
+      </article>
     </Link>
-  )
-);
+  );
+};
