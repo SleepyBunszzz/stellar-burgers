@@ -33,27 +33,48 @@ const initialState: UserState = {
 
 export const fetchUser = createAsyncThunk<TUserData>(
   'user/fetchUser',
-  async () => {
-    const me = await getUserApi();
-    return me.user;
+  async (_, { rejectWithValue }) => {
+    try {
+      const me = await getUserApi();
+      if (!me?.user?.email || !me?.user?.name) {
+        return rejectWithValue('No user payload');
+      }
+      return me.user;
+    } catch (e: any) {
+      return rejectWithValue(e?.message || 'Failed to fetch user');
+    }
   }
 );
 
 export const login = createAsyncThunk<TUserData, TLoginData>(
   'user/login',
-  async (data) => {
-    await loginUserApi(data);
-    const me = await getUserApi();
-    return me.user;
+  async (data, { rejectWithValue }) => {
+    try {
+      await loginUserApi(data);
+      const me = await getUserApi();
+      if (!me?.user?.email || !me?.user?.name) {
+        return rejectWithValue('No user payload after login');
+      }
+      return me.user;
+    } catch (e: any) {
+      return rejectWithValue(e?.message || 'Login failed');
+    }
   }
 );
 
 export const register = createAsyncThunk<TUserData, TRegisterData>(
   'user/register',
-  async (data) => {
-    await registerUserApi(data);
-    const me = await getUserApi();
-    return me.user;
+  async (data, { rejectWithValue }) => {
+    try {
+      await registerUserApi(data);
+      const me = await getUserApi();
+      if (!me?.user?.email || !me?.user?.name) {
+        return rejectWithValue('No user payload after register');
+      }
+      return me.user;
+    } catch (e: any) {
+      return rejectWithValue(e?.message || 'Register failed');
+    }
   }
 );
 

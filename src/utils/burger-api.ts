@@ -197,6 +197,9 @@ export const getUserApi = (): Promise<TUserResponse> =>
       'Content-Type': 'application/json;charset=utf-8',
       ...buildAuthHeader()
     } as HeadersInit
+  }).then((data) => {
+    if (data?.success && data.user) return data;
+    throw { status: 400, message: 'Failed to get user' };
   });
 
 export const updateUserApi = (

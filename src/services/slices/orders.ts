@@ -1,7 +1,11 @@
 // src/services/slices/orders.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
-import { getOrderByNumberApi, createOrderApi } from '../../utils/burger-api';
+import {
+  getOrdersApi,
+  getOrderByNumberApi,
+  createOrderApi
+} from '../../utils/burger-api';
 import type { TOrder } from '../../utils/types';
 
 type OrdersState = {
@@ -9,7 +13,6 @@ type OrdersState = {
   currentOrder: TOrder | null;
   orderRequest: boolean;
   error: string | null;
-  // что отправляли в последний раз (для отладки/повтора)
   lastOrderIngredients?: string[];
 };
 
@@ -21,17 +24,22 @@ const initialState: OrdersState = {
   lastOrderIngredients: undefined
 };
 
-// Получить заказ по номеру (страница/модалка заказа)
-export const fetchOrderByNumber = createAsyncThunk<TOrder, number>(
-  'orders/fetchOrderByNumber',
-  async (number) => {
-    const res = await getOrderByNumberApi(number);
-    // API возвращает массив orders; берём первый
-    return res.orders[0];
+export const fetchOrders = createAsyncThunk<TOrder[]>(
+  'orders/fetchMine',
+  async () => {
+    const orders = await getOrdersApi();
+    return orders;
   }
 );
 
-// Создать заказ (из конструктора)
+export const fetchOrderByNumber = createAsyncThunk<TOrder | undefined, number>(
+  'orders/fetchOrderByNumber',
+  async (number) => {
+    const res = await getOrderByNumberApi(number);
+    return res.orders?.[0];
+  }
+);
+
 export const createOrder = createAsyncThunk<
   { order: TOrder; name: string },
   string[]
@@ -49,53 +57,63 @@ const ordersSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
-    // Создание заказа
-    builder.addCase(createOrder.pending, (state, action) => {
-      state.orderRequest = true;
-      state.error = null;
-      // Сохраняем, что отправили
-      state.lastOrderIngredients = action.meta.arg;
-    });
-    builder.addCase(createOrder.fulfilled, (state, { payload }) => {
-      state.orderRequest = false;
-      state.currentOrder = payload.order;
+    builder
+      .addCase(fetchOrders.pending, (state) => {
+        state.orderRequest = true;
+        state.error = null;
+      })
+      .addCase(fetchOrders.fulfilled, (state, { payload }) => {
+        state.orderRequest = false;
+        state.orders = payload;
+      })
+      .addCase(fetchOrders.rejected, (state, action) => {
+        state.orderRequest = false;
+        state.error = action.error.message || 'Не удалось загрузить заказы';
+      });
 
-      // upsert созданного заказа в список
-      const idx = state.orders.findIndex((o) => o._id === payload.order._id);
-      if (idx === -1) state.orders.push(payload.order);
-      else state.orders[idx] = payload.order;
-    });
-    builder.addCase(createOrder.rejected, (state, action) => {
-      state.orderRequest = false;
-      state.error = action.error.message || 'Не удалось создать заказ';
-    });
+    builder
+      .addCase(createOrder.pending, (state, action) => {
+        state.orderRequest = true;
+        state.error = null;
+        state.lastOrderIngredients = action.meta.arg;
+      })
+      .addCase(createOrder.fulfilled, (state, { payload }) => {
+        state.orderRequest = false;
+        state.currentOrder = payload.order;
 
-    // Заказ по номеру
-    builder.addCase(fetchOrderByNumber.pending, (state) => {
-      state.orderRequest = true;
-      state.error = null;
-    });
-    builder.addCase(fetchOrderByNumber.fulfilled, (state, { payload }) => {
-      state.orderRequest = false;
-      state.currentOrder = payload;
+        const idx = state.orders.findIndex((o) => o._id === payload.order._id);
+        if (idx === -1) state.orders.push(payload.order);
+        else state.orders[idx] = payload.order;
+      })
+      .addCase(createOrder.rejected, (state, action) => {
+        state.orderRequest = false;
+        state.error = action.error.message || 'Не удалось создать заказ';
+      });
 
-      // upsert найденного заказа в список
-      if (payload) {
-        const idx = state.orders.findIndex((o) => o._id === payload._id);
-        if (idx === -1) state.orders.push(payload);
-        else state.orders[idx] = payload;
-      }
-    });
-    builder.addCase(fetchOrderByNumber.rejected, (state, action) => {
-      state.orderRequest = false;
-      state.error = action.error.message || 'Не удалось загрузить заказ';
-    });
+    builder
+      .addCase(fetchOrderByNumber.pending, (state) => {
+        state.orderRequest = true;
+        state.error = null;
+      })
+      .addCase(fetchOrderByNumber.fulfilled, (state, { payload }) => {
+        state.orderRequest = false;
+        state.currentOrder = payload ?? null;
+
+        if (payload) {
+          const idx = state.orders.findIndex((o) => o._id === payload._id);
+          if (idx === -1) state.orders.push(payload);
+          else state.orders[idx] = payload;
+        }
+      })
+      .addCase(fetchOrderByNumber.rejected, (state, action) => {
+        state.orderRequest = false;
+        state.error = action.error.message || 'Не удалось загрузить заказ';
+      });
   }
 });
 
 export const { clearCurrentOrder } = ordersSlice.actions;
 
-// Селекторы
 export const selectOrders = (state: RootState) => state.orders.orders;
 export const selectCurrentOrder = (state: RootState) =>
   state.orders.currentOrder;
