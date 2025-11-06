@@ -1,5 +1,14 @@
-.content {
-  overflow-y: scroll;
-  width: 100%;
-  height: 100%;
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.list::after {
+  content: '';
+  display: block;
+  height: 16px;
 }

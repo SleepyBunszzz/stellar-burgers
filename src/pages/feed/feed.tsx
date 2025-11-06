@@ -54,13 +54,5 @@ export const Feed: FC = () => {
     return <Preloader />;
   }
 
-  return (
-    <FeedUI
-      orders={orders}
-      handleGetFeeds={() => {
-        // кнопка "Обновить" есть во вьюхе,
-        // но у нас уже realtime через socket, так что это просто заглушка.
-      }}
-    />
-  );
+  return <FeedUI orders={orders} />;
 };

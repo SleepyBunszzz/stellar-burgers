@@ -5,6 +5,7 @@
   max-width: 1240px;
   margin-left: auto;
   margin-right: auto;
+  padding-bottom: 40px;
 }
 
 .titleBox {
@@ -21,14 +22,27 @@
   height: 100%;
   width: 1240px;
   overflow: hidden;
+  gap: 40px;
 }
 
 .columnOrders {
   width: 608px;
-}
-
-.columnInfo {
+  max-height: calc(100vh - 160px);
   overflow-y: auto;
   overflow-x: hidden;
+  padding-right: 8px;
+  padding-bottom: 24px;
+  box-sizing: content-box;
+}
+
+.columnOrders::-webkit-scrollbar { width: 6px; }
+.columnOrders::-webkit-scrollbar-thumb {
+  background: #5a5aff;
+  border-radius: 6px;
+}
+.columnOrders::-webkit-scrollbar-track { background: transparent; }
+
+.columnInfo {
   width: 580px;
+  overflow: hidden;
 }

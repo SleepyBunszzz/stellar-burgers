@@ -5,6 +5,7 @@ import { selectUser } from '../../services/slices/user';
 import { clearConstructor } from '../../services/slices/constructor';
 import { createOrder, selectOrderRequest } from '../../services/slices/orders';
 import { BurgerConstructorUI } from '@ui';
+import { TConstructorIngredient } from '@utils-types';
 
 export const BurgerConstructor: FC = () => {
   const dispatch = useDispatch();
