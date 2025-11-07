@@ -8,26 +8,33 @@ import { TIngredient } from '@utils-types';
 import { selectIngredients } from '../../services/slices/ingredients';
 import {
   fetchOrderByNumber,
-  selectCurrentOrder
+  selectCurrentOrder,
+  selectOrderRequest
 } from '../../services/slices/orders';
 
 export const OrderInfo: FC = () => {
   const { number } = useParams<{ number: string }>();
   const dispatch = useDispatch();
+
   const ingredients: TIngredient[] = useSelector(selectIngredients);
   const orderData = useSelector(selectCurrentOrder);
+  const loading = useSelector(selectOrderRequest);
 
+  // Загружаем заказ, только если номера нет в стейте или он отличается
   useEffect(() => {
-    if (number) {
-      dispatch(fetchOrderByNumber(Number(number)));
+    if (!number) return;
+    const num = Number(number);
+    if (!orderData || orderData.number !== num) {
+      dispatch(fetchOrderByNumber(num));
     }
-  }, [dispatch, number]);
+  }, [dispatch, number, orderData]);
 
   const orderInfo = useMemo(() => {
-    if (!orderData || !ingredients.length) return null;
+    if (!orderData || ingredients.length === 0) return null;
 
     const date = new Date(orderData.createdAt);
 
+    // Считаем агрегированную карту ингредиентов с количеством
     const ingredientsInfo = orderData.ingredients.reduce(
       (acc: Record<string, TIngredient & { count: number }>, id: string) => {
         const ing = ingredients.find((i) => i._id === id);
@@ -51,7 +58,8 @@ export const OrderInfo: FC = () => {
     return { ...orderData, ingredientsInfo, date, total };
   }, [orderData, ingredients]);
 
-  if (!orderInfo) return <Preloader />;
+  // Показываем прелоадер при загрузке или пока не готовы данные
+  if (loading || !orderInfo) return <Preloader />;
 
   return <OrderInfoUI orderInfo={orderInfo} />;
 };

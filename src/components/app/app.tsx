@@ -42,7 +42,7 @@ function App() {
   const didFetchIngredients = useRef(false);
   const didCheckAuth = useRef(false);
 
-  const state = location.state as { background?: Location } | undefined;
+  const state = location.state as { background?: RouterLocation } | undefined;
 
   useEffect(() => {
     if (didFetchIngredients.current) return;

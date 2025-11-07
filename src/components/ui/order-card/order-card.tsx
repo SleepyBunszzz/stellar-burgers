@@ -1,4 +1,3 @@
-// src/components/ui/order-card/order-card.tsx
 import { Link, useLocation } from 'react-router-dom';
 import type { FC } from 'react';
 import type { Location as RRLocation } from 'react-router-dom';
@@ -26,7 +25,7 @@ export type OrderInfoMin = {
 type Props = {
   orderInfo: OrderInfoMin;
   maxIngredients: number;
-  showStatus: boolean;
+  showStatus: boolean; // true => профиль (/profile/orders), false => лента (/feed)
   locationState?: { background: RRLocation };
 };
 
@@ -47,8 +46,8 @@ function formatOrderDate(d: Date) {
   else if (isSame(d, yesterday)) prefix = 'Вчера';
   else {
     const diff = Math.floor((+now - +d) / 86400000);
-    const n10 = diff % 10,
-      n100 = diff % 100;
+    const n10 = diff % 10;
+    const n100 = diff % 100;
     const form =
       n10 === 1 && n100 !== 11
         ? 'день'
@@ -67,6 +66,8 @@ export const OrderCardUI: FC<Props> = ({
   locationState
 }) => {
   const location = useLocation();
+
+  // Формируем целевой маршрут в зависимости от того, где рендерится карточка
   const to = showStatus
     ? `/profile/orders/${orderInfo.number}`
     : `/feed/${orderInfo.number}`;
@@ -74,6 +75,7 @@ export const OrderCardUI: FC<Props> = ({
   return (
     <Link
       to={to}
+      // КЛЮЧЕВОЕ: передаём background для модалки; если сверху не прокинули — используем текущую локацию
       state={locationState ?? { background: location }}
       className={pageStyles.title}
     >
@@ -87,7 +89,7 @@ export const OrderCardUI: FC<Props> = ({
         </span>
       </div>
 
-      {/* BODY: название + статус (если нужно показывать) */}
+      {/* BODY: название + статус (для профиля) */}
       <div className={pageStyles.cardBody}>
         <h3 className='text text_type_main-medium'>{orderInfo.name}</h3>
         {showStatus && (
