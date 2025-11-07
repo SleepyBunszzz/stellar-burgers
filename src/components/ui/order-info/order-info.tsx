@@ -17,7 +17,6 @@ export const OrderInfoUI: FC<OrderInfoUIProps> = memo(({ orderInfo }) => (
 
     <OrderStatus status={orderInfo.status} />
 
-    {/* фикс опечатки: pb-6 (а не pb=6) */}
     <p className={`text text_type_main-medium pt-15 pb-6`}>Состав:</p>
 
     <ul className={`${styles.list} mb-8`}>

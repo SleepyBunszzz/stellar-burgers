@@ -1,7 +1,7 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  display: grid;
+  place-items: center;
+  width: 100%;
 }
 
 .article {
@@ -9,6 +9,7 @@
   display: flex;
   flex-direction: column;
   width: 260px;
+  margin: 0 auto;
   cursor: pointer;
   text-decoration: none;
   color: #fff;
@@ -26,7 +27,7 @@
 
 .addLink {
   width: 260px;
-  margin: 8px 0 0;
+  margin: 8px auto 0;
   background: transparent;
   border: 0;
   padding: 0;

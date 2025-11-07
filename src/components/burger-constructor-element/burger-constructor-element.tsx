@@ -1,24 +1,31 @@
-import { FC, memo } from 'react';
-import { BurgerConstructorElementUI } from '@ui';
-import { BurgerConstructorElementProps } from './type';
+import { FC } from 'react';
+import {
+  ConstructorElement,
+  DragIcon
+} from '@zlden/react-developer-burger-ui-components';
+import styles from '../ui/burger-constructor-element/burger-constructor-element.module.css';
+import { TConstructorItemUI } from '../ui/burger-constructor/type';
 
-export const BurgerConstructorElement: FC<BurgerConstructorElementProps> = memo(
-  ({ ingredient, index, totalItems }) => {
-    const handleMoveDown = () => {};
+type Props = {
+  ingredient: TConstructorItemUI;
+  index: number;
+  totalItems: number;
+  onRemove: () => void;
+};
 
-    const handleMoveUp = () => {};
-
-    const handleClose = () => {};
-
-    return (
-      <BurgerConstructorElementUI
-        ingredient={ingredient}
-        index={index}
-        totalItems={totalItems}
-        handleMoveUp={handleMoveUp}
-        handleMoveDown={handleMoveDown}
-        handleClose={handleClose}
-      />
-    );
-  }
+export const BurgerConstructorElement: FC<Props> = ({
+  ingredient,
+  onRemove
+}) => (
+  <li className={styles.item}>
+    <DragIcon type='primary' />
+    <ConstructorElement
+      text={ingredient.name}
+      price={ingredient.price}
+      thumbnail={ingredient.image}
+      handleClose={onRemove}
+    />
+  </li>
 );
+
+export default BurgerConstructorElement;

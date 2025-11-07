@@ -67,7 +67,6 @@ export const OrderCardUI: FC<Props> = ({
 }) => {
   const location = useLocation();
 
-  // Формируем целевой маршрут в зависимости от того, где рендерится карточка
   const to = showStatus
     ? `/profile/orders/${orderInfo.number}`
     : `/feed/${orderInfo.number}`;
@@ -75,11 +74,9 @@ export const OrderCardUI: FC<Props> = ({
   return (
     <Link
       to={to}
-      // КЛЮЧЕВОЕ: передаём background для модалки; если сверху не прокинули — используем текущую локацию
       state={locationState ?? { background: location }}
       className={pageStyles.title}
     >
-      {/* HEADER: номер + дата */}
       <div className={pageStyles.cardHeader}>
         <span className={`text text_type_digits-default ${pageStyles.number}`}>
           #{orderInfo.number}
@@ -88,8 +85,6 @@ export const OrderCardUI: FC<Props> = ({
           {formatOrderDate(orderInfo.date)}
         </span>
       </div>
-
-      {/* BODY: название + статус (для профиля) */}
       <div className={pageStyles.cardBody}>
         <h3 className='text text_type_main-medium'>{orderInfo.name}</h3>
         {showStatus && (
@@ -98,8 +93,6 @@ export const OrderCardUI: FC<Props> = ({
           </div>
         )}
       </div>
-
-      {/* FOOTER: иконки ингредиентов + цена */}
       <div className={pageStyles.cardFooter}>
         <div className={pageStyles.ingRow}>
           {orderInfo.ingredientsToShow.map((i, idx) => (

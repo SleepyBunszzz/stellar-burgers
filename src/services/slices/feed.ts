@@ -47,7 +47,6 @@ export const { feedLoadingStarted, feedLoadingSuccess, feedDisconnected } =
 
 export const feedReducer = feedSlice.reducer;
 
-// селекторы
 export const selectFeedOrders = (state: RootState) => state.feed.orders;
 export const selectFeedTotals = (state: RootState) => ({
   total: state.feed.total,

@@ -1,4 +1,3 @@
-// src/components/ui/burger-constructor/burger-constructor.tsx
 import React, { FC } from 'react';
 import {
   Button,
@@ -6,15 +5,15 @@ import {
   CurrencyIcon
 } from '@zlden/react-developer-burger-ui-components';
 import styles from './burger-constructor.module.css';
-import { BurgerConstructorUIProps } from './type';
-import { TConstructorIngredient } from '@utils-types';
+import { BurgerConstructorUIProps, TConstructorItemUI } from './type';
 import { BurgerConstructorElement } from '@components';
 
 export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
   constructorItems,
   orderRequest,
   price,
-  onOrderClick
+  onOrderClick,
+  onRemoveIngredient
 }) => (
   <section className={styles.burger_constructor}>
     {constructorItems.bun ? (
@@ -38,21 +37,23 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
     <ul className={styles.elements}>
       {constructorItems.ingredients.length > 0 ? (
         constructorItems.ingredients.map(
-          (item: TConstructorIngredient & { id: string }, index: number) => (
+          (item: TConstructorItemUI, index: number) => (
             <BurgerConstructorElement
               ingredient={item}
               index={index}
               totalItems={constructorItems.ingredients.length}
               key={item.id}
+              onRemove={() => onRemoveIngredient(item.id)}
             />
           )
         )
       ) : (
-        <div
+        <li
           className={`${styles.noBuns} ml-8 mb-4 mr-5 text text_type_main-default`}
+          role='presentation'
         >
           Выберите начинку
-        </div>
+        </li>
       )}
     </ul>
 

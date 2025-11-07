@@ -60,11 +60,9 @@ const ingredientsSlice = createSlice({
   }
 });
 
-// селекторы
 export const selectAllIngredients = (state: RootState) =>
   state.ingredients.data;
 
-// alias, чтобы не падали компоненты, которые ожидают selectIngredients
 export const selectIngredients = (state: RootState) => state.ingredients.data;
 
 export const selectIngredientsLoading = (state: RootState) =>

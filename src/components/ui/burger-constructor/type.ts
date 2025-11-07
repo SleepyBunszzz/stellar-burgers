@@ -1,14 +1,15 @@
-// src/components/ui/burger-constructor/type.ts
-import { TConstructorIngredient } from '@utils-types';
+import { TOrder, TIngredient } from '@utils-types';
 
-export type ConstructorItems = {
-  bun: (TConstructorIngredient & { id: string }) | null;
-  ingredients: Array<TConstructorIngredient & { id: string }>;
-};
+export type TConstructorItemUI = TIngredient & { id: string };
 
 export type BurgerConstructorUIProps = {
-  constructorItems: ConstructorItems;
+  constructorItems: {
+    bun: TConstructorItemUI | null;
+    ingredients: TConstructorItemUI[];
+  };
   orderRequest: boolean;
   price: number;
   onOrderClick: () => void;
+  onRemoveIngredient: (id: string) => void;
+  orderModalData?: TOrder | null;
 };

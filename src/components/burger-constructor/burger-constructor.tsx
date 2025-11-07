@@ -2,10 +2,9 @@ import { FC, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from '../../services/store';
 import { selectUser } from '../../services/slices/user';
-import { clearConstructor } from '../../services/slices/constructor';
 import { createOrder, selectOrderRequest } from '../../services/slices/orders';
 import { BurgerConstructorUI } from '@ui';
-import { TConstructorIngredient } from '@utils-types';
+import { removeIngredient } from '../../services/slices/constructor';
 
 export const BurgerConstructor: FC = () => {
   const dispatch = useDispatch();
@@ -37,24 +36,25 @@ export const BurgerConstructor: FC = () => {
       return;
     }
     if (!constructorItems.bun || orderRequest) return;
-
     const ingredientIds = [
       constructorItems.bun._id,
       ...constructorItems.ingredients.map((i) => i._id),
       constructorItems.bun._id
     ];
-
     dispatch(createOrder(ingredientIds));
-    // по желанию можно очищать конструктор после успешного заказа в extraReducer createOrder.fulfilled
-    // или здесь через .unwrap().then(() => dispatch(clearConstructor()))
+  };
+
+  const onRemoveIngredient = (id: string) => {
+    dispatch(removeIngredient(id));
   };
 
   return (
     <BurgerConstructorUI
       price={price}
-      orderRequest={orderRequest} // можно оставить, если UI что-то визуально блокирует
+      orderRequest={orderRequest}
       constructorItems={constructorItems}
       onOrderClick={onOrderClick}
+      onRemoveIngredient={onRemoveIngredient}
     />
   );
 };

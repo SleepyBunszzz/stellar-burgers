@@ -1,4 +1,3 @@
-// src/components/order-info/order-info.tsx
 import { FC, useMemo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from '../../services/store';
@@ -20,7 +19,6 @@ export const OrderInfo: FC = () => {
   const orderData = useSelector(selectCurrentOrder);
   const loading = useSelector(selectOrderRequest);
 
-  // Загружаем заказ, только если номера нет в стейте или он отличается
   useEffect(() => {
     if (!number) return;
     const num = Number(number);
@@ -34,7 +32,6 @@ export const OrderInfo: FC = () => {
 
     const date = new Date(orderData.createdAt);
 
-    // Считаем агрегированную карту ингредиентов с количеством
     const ingredientsInfo = orderData.ingredients.reduce(
       (acc: Record<string, TIngredient & { count: number }>, id: string) => {
         const ing = ingredients.find((i) => i._id === id);
@@ -58,7 +55,6 @@ export const OrderInfo: FC = () => {
     return { ...orderData, ingredientsInfo, date, total };
   }, [orderData, ingredients]);
 
-  // Показываем прелоадер при загрузке или пока не готовы данные
   if (loading || !orderInfo) return <Preloader />;
 
   return <OrderInfoUI orderInfo={orderInfo} />;

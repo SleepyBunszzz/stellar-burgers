@@ -1,4 +1,3 @@
-// src/services/slices/orders.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
 import {

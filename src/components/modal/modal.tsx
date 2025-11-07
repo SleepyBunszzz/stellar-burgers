@@ -1,4 +1,3 @@
-// src/components/modal/modal.tsx
 import { FC, memo, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { TModalProps } from './type';

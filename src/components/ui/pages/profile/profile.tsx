@@ -34,9 +34,6 @@ export const ProfileUI: FC<ProfileUIProps> = ({
             }
             value={formValue.name}
             name='name'
-            // error={false}
-            // errorText=''
-            // size='default'
             icon='EditIcon'
           />
         </div>
@@ -49,9 +46,6 @@ export const ProfileUI: FC<ProfileUIProps> = ({
             }
             value={formValue.email}
             name='email'
-            // error={false}
-            // errorText=''
-            // size='default'
             icon='EditIcon'
           />
         </div>
@@ -64,9 +58,6 @@ export const ProfileUI: FC<ProfileUIProps> = ({
             }
             value={formValue.password}
             name='password'
-            // error={false}
-            // errorText=''
-            // size='default'
             icon='EditIcon'
           />
         </div>
