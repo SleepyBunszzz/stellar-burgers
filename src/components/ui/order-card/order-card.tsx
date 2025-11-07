@@ -72,7 +72,6 @@ export const OrderCardUI: FC<Props> = ({
     : `/feed/${orderInfo.number}`;
 
   return (
-    // ссылка без собственного фона/паддингов — контейнер задаёт <li> из OrdersListUI
     <Link
       to={to}
       state={locationState ?? { background: location }}
@@ -103,7 +102,7 @@ export const OrderCardUI: FC<Props> = ({
         <div className={pageStyles.ingRow}>
           {orderInfo.ingredientsToShow.map((i, idx) => (
             <div
-              key={i._id ?? idx}
+              key={`${i._id ?? 'unknown'}-${idx}`}
               className={pageStyles.ingWrap}
               style={{ zIndex: 6 - idx, marginLeft: idx === 0 ? 0 : -12 }}
             >

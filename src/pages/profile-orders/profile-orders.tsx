@@ -1,8 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from '../../services/store';
-import { ProfileMenu } from '../../components/profile-menu/profile-menu';
-import { Preloader } from '@ui';
-
+import { ProfileOrdersUI } from '../../components/ui/pages/profile-orders/profile-orders';
 import {
   profileFeedStarted,
   profileFeedSuccess,
@@ -10,35 +8,52 @@ import {
   profileFeedDisconnected,
   selectProfileFeed
 } from '../../services/slices/profile-feed';
-
-import { makeSelectMyOrdersWithDetails } from '../../services/selectors/orders';
 import { getCookie } from '../../utils/cookie';
-import { Link } from 'react-router-dom';
+
+const buildWsUrl = (origin: string, token: string) => {
+  // origin может быть вида https://... или https://.../api
+  const clean = origin.replace(/\/api\/?$/, '').replace(/\/+$/, '');
+  const wsOrigin = clean.replace(/^http(s?):/, 'ws$1:');
+  return `${wsOrigin}/orders?token=${encodeURIComponent(token)}`;
+};
+
+const extractAccessToken = () => {
+  const raw = getCookie('accessToken') || '';
+  // удаляем 'Bearer ' и возможные кавычки/пробелы
+  return raw
+    .replace(/^Bearer\s+/i, '')
+    .replace(/^"+|"+$/g, '')
+    .trim();
+};
 
 export const ProfileOrders = () => {
   const dispatch = useDispatch();
   const feed = useSelector(selectProfileFeed);
-  const selectOrders = useMemo(() => makeSelectMyOrdersWithDetails(), []);
-  const orders = useSelector(selectOrders);
+
+  // читаем заказы прямо из profileFeed
+  const ordersSorted = useMemo(() => {
+    const arr = feed.orders ?? [];
+    return [...arr].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }, [feed.orders]);
 
   useEffect(() => {
-    // пример базового адреса как в твоём Feed
     const apiBase =
-      process.env.BURGER_API_URL || 'https://norma.education-services.ru/api';
-    const baseWs = apiBase.replace(/^https/, 'wss').replace(/\/api$/, '');
+      process.env.BURGER_API_URL || 'https://norma.nomoreparties.space';
+    const token = extractAccessToken();
+    if (!token) {
+      // нет токена — не открываем WS
+      return;
+    }
 
-    // токен из cookies; WS ожидает без "Bearer "
-    const raw = getCookie('accessToken') || '';
-    const token = raw.replace(/^Bearer\s+/i, '');
-
-    const url = `${baseWs}/orders?token=${token}`;
+    const url = buildWsUrl(apiBase, token);
 
     dispatch(profileFeedStarted());
     const socket = new WebSocket(url);
 
-    socket.onopen = () => {
-      /* можно логировать */
-    };
+    socket.onopen = () => {};
     socket.onerror = () => dispatch(profileFeedError('WS error'));
     socket.onclose = () => dispatch(profileFeedDisconnected());
     socket.onmessage = (event) => {
@@ -54,63 +69,14 @@ export const ProfileOrders = () => {
           );
         }
       } catch {
-        // игнор
+        /* ignore */
       }
     };
 
     return () => socket.close();
   }, [dispatch]);
 
-  return (
-    <main
-      className='pt-10 pb-10'
-      style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 40 }}
-    >
-      <aside>
-        <ProfileMenu />
-      </aside>
-
-      <section>
-        {feed.loading && orders.length === 0 ? (
-          <Preloader />
-        ) : orders.length === 0 ? (
-          <p className='text text_type_main-default'>Заказов пока нет</p>
-        ) : (
-          <ul className='flex flex-col gap-4'>
-            {orders.map((o) => (
-              <li
-                key={o._id}
-                className='p-6 mb-2'
-                style={{ background: '#1C1C21', borderRadius: 12 }}
-              >
-                <div
-                  className='mb-2'
-                  style={{ display: 'flex', justifyContent: 'space-between' }}
-                >
-                  <span className='text text_type_digits-default'>
-                    #{o.number}
-                  </span>
-                  <span className='text'>{o.statusLabel}</span>
-                </div>
-                <Link
-                  className='text text_type_main-default'
-                  to={`/profile/orders/${o.number}`}
-                >
-                  {o.name}
-                </Link>
-                <div
-                  className='mt-4'
-                  style={{ display: 'flex', justifyContent: 'flex-end' }}
-                >
-                  <span className='text text_type_digits-default'>
-                    {o.price}
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-    </main>
-  );
+  return <ProfileOrdersUI orders={ordersSorted} />;
 };
+
+export default ProfileOrders;

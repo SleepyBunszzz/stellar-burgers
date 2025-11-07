@@ -6,7 +6,10 @@ import { OrderCard } from '@components';
 export const OrdersListUI: FC<OrdersListUIProps> = memo(({ orderByDate }) => (
   <ul className={pageStyles.list}>
     {orderByDate.map((order) => (
-      <li key={order._id} className={pageStyles.card}>
+      <li
+        key={`${order._id ?? 'ord'}-${order.number}`}
+        className={pageStyles.card}
+      >
         <OrderCard order={order} />
       </li>
     ))}
