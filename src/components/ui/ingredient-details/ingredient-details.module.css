@@ -1,10 +1,22 @@
 .content {
-  margin: 0 60px;
+  margin: 0;
+  padding: 0 32px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   width: 520px;
+  max-width: calc(100vw - 64px);
+  box-sizing: border-box;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.img {
+  display: block;
+  max-width: 100%;
+  height: auto;
 }
 
 .nutritional_values {
@@ -15,10 +27,13 @@
   padding: 0;
   margin: 0;
   color: #8585ad;
+  column-gap: 16px;
+  min-width: 0;
 }
 
 .nutritional_value {
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-width: 0;
 }

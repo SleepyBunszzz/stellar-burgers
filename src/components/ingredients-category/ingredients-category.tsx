@@ -11,7 +11,7 @@ export const IngredientsCategory = forwardRef<
   const burgerConstructor = useSelector((s) => s.burgerConstructor);
 
   const ingredientsCounters = useMemo(() => {
-    const { bun, items } = burgerConstructor; // ✅ заменили ingredients → items
+    const { bun, items } = burgerConstructor;
     const counters: Record<string, number> = {};
     items.forEach((ingredient: TIngredient) => {
       counters[ingredient._id] = (counters[ingredient._id] || 0) + 1;
