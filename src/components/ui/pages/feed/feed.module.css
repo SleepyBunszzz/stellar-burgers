@@ -5,7 +5,7 @@
   margin-left: auto;
   margin-right: auto;
   padding-left: 40px;
-  padding-bottom: 100px;
+  padding-bottom: 80px;
   overflow: hidden;
 }
 
@@ -23,8 +23,9 @@
   width: 1240px;
   gap: 40px;
   height: calc(100vh - 160px);
-  overflow: hidden;
   margin: 0 auto;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .columnOrders {
@@ -32,6 +33,7 @@
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+
   padding-right: 8px;
   padding-bottom: 24px;
   scrollbar-gutter: stable;
@@ -47,4 +49,13 @@
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+
+  padding-bottom: 24px;
+  scrollbar-gutter: stable;
 }
+
+
+.columnInfo::-webkit-scrollbar { width: 6px; }
+.columnInfo::-webkit-scrollbar-track { background: transparent; border-radius: 0; }
+.columnInfo::-webkit-scrollbar-thumb { background: #8e8ec2; border-radius: 0; }
+.columnInfo { scrollbar-width: thin; scrollbar-color: #8e8ec2 transparent; }
