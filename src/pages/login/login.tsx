@@ -37,6 +37,7 @@ export const Login: FC = () => {
       setPassword={setPassword}
       errorText={errorText}
       handleSubmit={handleSubmit}
+      loading={loading}
     />
   );
 };

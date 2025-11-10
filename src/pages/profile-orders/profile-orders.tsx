@@ -9,9 +9,9 @@ import {
   selectProfileFeed
 } from '../../services/slices/profile-feed';
 import { getCookie } from '../../utils/cookie';
+import { URL } from '../../utils/burger-api';
 
 const buildWsUrl = (origin: string, token: string) => {
-  // origin может быть вида https://... или https://.../api
   const clean = origin.replace(/\/api\/?$/, '').replace(/\/+$/, '');
   const wsOrigin = clean.replace(/^http(s?):/, 'ws$1:');
   return `${wsOrigin}/orders?token=${encodeURIComponent(token)}`;
@@ -19,7 +19,6 @@ const buildWsUrl = (origin: string, token: string) => {
 
 const extractAccessToken = () => {
   const raw = getCookie('accessToken') || '';
-  // удаляем 'Bearer ' и возможные кавычки/пробелы
   return raw
     .replace(/^Bearer\s+/i, '')
     .replace(/^"+|"+$/g, '')
@@ -30,7 +29,6 @@ export const ProfileOrders = () => {
   const dispatch = useDispatch();
   const feed = useSelector(selectProfileFeed);
 
-  // читаем заказы прямо из profileFeed
   const ordersSorted = useMemo(() => {
     const arr = feed.orders ?? [];
     return [...arr].sort(
@@ -40,18 +38,14 @@ export const ProfileOrders = () => {
   }, [feed.orders]);
 
   useEffect(() => {
-    const apiBase =
-      process.env.BURGER_API_URL || 'https://norma.nomoreparties.space';
+    const apiBase = URL;
     const token = extractAccessToken();
-    if (!token) {
-      // нет токена — не открываем WS
-      return;
-    }
+    if (!token) return;
 
-    const url = buildWsUrl(apiBase, token);
+    const wsUrl = buildWsUrl(apiBase, token);
 
     dispatch(profileFeedStarted());
-    const socket = new WebSocket(url);
+    const socket = new WebSocket(wsUrl);
 
     socket.onopen = () => {};
     socket.onerror = () => dispatch(profileFeedError('WS error'));
@@ -68,9 +62,7 @@ export const ProfileOrders = () => {
             })
           );
         }
-      } catch {
-        /* ignore */
-      }
+      } catch {}
     };
 
     return () => socket.close();

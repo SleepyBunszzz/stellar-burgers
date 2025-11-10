@@ -4,10 +4,8 @@ import type { Meta, StoryObj } from '@storybook/react';
 const meta = {
   title: 'Example/BurgerConstructorElement',
   component: BurgerConstructorElementUI,
-  // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
   tags: ['autodocs'],
   parameters: {
-    // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
     layout: 'fullscreen'
   }
 } satisfies Meta<typeof BurgerConstructorElementUI>;
@@ -19,7 +17,7 @@ export const DefaultElement: Story = {
   args: {
     ingredient: {
       _id: '111',
-      id: '222',
+      cid: '222', // <-- было id, теперь cid
       name: 'Булка',
       type: 'bun',
       proteins: 12,

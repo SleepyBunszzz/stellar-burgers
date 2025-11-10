@@ -6,16 +6,7 @@ import {
 } from '@zlden/react-developer-burger-ui-components';
 import styles from '../common.module.css';
 import { Link } from 'react-router-dom';
-
-type LoginUIProps = {
-  formRef: React.RefObject<HTMLFormElement>;
-  email: string;
-  setEmail: (value: string) => void;
-  password: string;
-  setPassword: (value: string) => void;
-  errorText: string;
-  handleSubmit: React.FormEventHandler<HTMLFormElement>;
-};
+import type { LoginUIProps } from './type';
 
 export const LoginUI: FC<LoginUIProps> = ({
   formRef,
@@ -24,7 +15,8 @@ export const LoginUI: FC<LoginUIProps> = ({
   password,
   setPassword,
   errorText,
-  handleSubmit
+  handleSubmit,
+  loading
 }) => (
   <main className={styles.container}>
     <div className={`pt-6 ${styles.wrapCenter}`}>
@@ -59,8 +51,13 @@ export const LoginUI: FC<LoginUIProps> = ({
         </div>
 
         <div className={`pb-6 ${styles.button}`}>
-          <Button type='primary' size='medium' htmlType='submit'>
-            Войти
+          <Button
+            type='primary'
+            size='medium'
+            htmlType='submit'
+            disabled={!!loading}
+          >
+            {loading ? 'Входим…' : 'Войти'}
           </Button>
         </div>
 
