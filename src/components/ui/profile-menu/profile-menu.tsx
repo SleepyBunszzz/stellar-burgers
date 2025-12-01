@@ -30,6 +30,7 @@ export const ProfileMenuUI: FC<ProfileMenuUIProps> = ({
       История заказов
     </NavLink>
     <button
+      type='button'
       className={`text text_type_main-medium text_color_inactive pt-4 pb-4 ${styles.button}`}
       onClick={handleLogout}
     >

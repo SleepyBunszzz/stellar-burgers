@@ -1,1 +1,1 @@
-export { ProfileOrders } from './profile-orders';
+export { default as ProfileOrders } from './profile-orders';

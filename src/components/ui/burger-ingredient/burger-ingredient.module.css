@@ -1,17 +1,19 @@
+/* src/components/ui/burger-ingredient/burger-ingredient.module.css */
 .container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  display: block;
+  width: 100%;
 }
 
 .article {
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 260px;
+  width: 100%;
+  max-width: 260px;
+  margin: 0;
   cursor: pointer;
   text-decoration: none;
-  color: #ffff;
+  color: #fff;
 }
 
 .cost {
@@ -24,7 +26,21 @@
   text-align: center;
 }
 
-.addButton {
-  width: 260px;
-  justify-content: center;
+.addLink {
+  width: 100%;
+  max-width: 260px;
+  margin: 8px 0 0;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  text-align: center;
+  color: #4c4cff;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.addLink:hover,
+.addLink:focus {
+  text-decoration: none;
+  color: #6b6bff;
 }

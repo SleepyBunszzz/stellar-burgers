@@ -1,15 +1,88 @@
 .menu {
   width: 320px;
+  margin-top: 65px;
+  margin-left: 35px;
+}
+
+
+.menu p,
+.menu .hint,
+.menu .text {
+  color: #8585ad !important;
+  opacity: 0.9;
 }
 
 .main {
   display: flex;
-  height: 100%;
   width: 1240px;
-  overflow: hidden;
+  gap: 40px;
   margin: 0 auto;
+  height: calc(100vh - 160px);
+  padding: 30px 0 100px 0;
+  overflow: hidden;
 }
 
 .orders {
-  width: 100%;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
+
+.scroller {
+  width: 760px;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 12px 8px 0;
+  scrollbar-gutter: stable;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  scrollbar-width: thin;
+  scrollbar-color: #6b6b94 transparent;
+}
+
+
+.scroller::-webkit-scrollbar { width: 6px; }
+.scroller::-webkit-scrollbar-track { background: transparent; border-radius: 0; }
+.scroller::-webkit-scrollbar-thumb { background: #6b6b94; border-radius: 0; border: none; }
+.scroller::-webkit-scrollbar-thumb:hover { background: #7b7ba8; }
+.scroller::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+
+.scroller,
+.scroller * {
+  border-left: 0 !important;
+  box-shadow: none !important;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card { background: #1c1c21; border-radius: 24px; padding: 24px; }
+.cardHeader { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.number { letter-spacing: .04em; }
+.date { opacity: .6; }
+.title { color: inherit; text-decoration: none; }
+.cardBody { margin: 6px 0 12px; }
+.cardFooter { display: flex; justify-content: space-between; align-items: center; }
+
+.ingRow { display: flex; align-items: center; }
+.ingWrap {
+  width: 64px; height: 64px; border-radius: 50%;
+  overflow: hidden; border: 2px solid rgba(76,76,255,.6);
+  background: #131316; display: flex; align-items: center; justify-content: center;
+  margin-left: -12px;
+}
+.ingWrap:first-child { margin-left: 0; }
+.ingImg { width: 100%; height: 100%; object-fit: cover; }
+.ingMore { backdrop-filter: blur(4px); background: rgba(0,0,0,.4); }

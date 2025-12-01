@@ -1,14 +1,17 @@
-import { FC } from 'react';
-
-import styles from './orders-list.module.css';
-
+import { FC, memo } from 'react';
+import pageStyles from '../pages/profile-orders/profile-orders.module.css';
 import { OrdersListUIProps } from './type';
 import { OrderCard } from '@components';
 
-export const OrdersListUI: FC<OrdersListUIProps> = ({ orderByDate }) => (
-  <div className={`${styles.content}`}>
+export const OrdersListUI: FC<OrdersListUIProps> = memo(({ orderByDate }) => (
+  <ul className={pageStyles.list}>
     {orderByDate.map((order) => (
-      <OrderCard order={order} key={order._id} />
+      <li
+        key={`${order._id ?? 'ord'}-${order.number}`}
+        className={pageStyles.card}
+      >
+        <OrderCard order={order} />
+      </li>
     ))}
-  </div>
-);
+  </ul>
+));

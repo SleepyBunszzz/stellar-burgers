@@ -1,35 +1,74 @@
-import React, { FC } from 'react';
-import styles from './app-header.module.css';
-import { TAppHeaderUIProps } from './type';
+import React from 'react';
+import { NavLink, useMatch } from 'react-router-dom';
 import {
+  Logo,
   BurgerIcon,
   ListIcon,
-  Logo,
   ProfileIcon
 } from '@zlden/react-developer-burger-ui-components';
+import styles from './app-header.module.css';
 
-export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => (
-  <header className={styles.header}>
-    <nav className={`${styles.menu} p-4`}>
-      <div className={styles.menu_part_left}>
-        <>
-          <BurgerIcon type={'primary'} />
-          <p className='text text_type_main-default ml-2 mr-10'>Конструктор</p>
-        </>
-        <>
-          <ListIcon type={'primary'} />
-          <p className='text text_type_main-default ml-2'>Лента заказов</p>
-        </>
-      </div>
-      <div className={styles.logo}>
-        <Logo className='' />
-      </div>
-      <div className={styles.link_position_last}>
-        <ProfileIcon type={'primary'} />
-        <p className='text text_type_main-default ml-2'>
-          {userName || 'Личный кабинет'}
-        </p>
-      </div>
-    </nav>
-  </header>
-);
+type AppHeaderProps = { userName?: string };
+
+export const AppHeader: React.FC<AppHeaderProps> = ({ userName }) => {
+  const profileDeepActive = !!useMatch('/profile/*');
+  const feedDeepActive = !!useMatch('/feed/*');
+
+  const linkClass = (active: boolean) =>
+    `${styles.link} text text_type_main-default pt-4 pr-5 pb-4 pl-5 ${active ? styles.link_active : ''}`;
+
+  return (
+    <header className={styles.header}>
+      <nav className={`${styles.menu} p-4`}>
+        <div className={styles.menu_part_left}>
+          <NavLink to='/' end className={({ isActive }) => linkClass(isActive)}>
+            {({ isActive }) => (
+              <>
+                <BurgerIcon type={isActive ? 'primary' : 'secondary'} />
+                <span className='ml-2'>Конструктор</span>
+              </>
+            )}
+          </NavLink>
+
+          <NavLink
+            to='/feed'
+            className={({ isActive }) => linkClass(isActive || feedDeepActive)}
+          >
+            {({ isActive }) => {
+              const active = isActive || feedDeepActive;
+              return (
+                <>
+                  <ListIcon type={active ? 'primary' : 'secondary'} />
+                  <span className='ml-2'>Лента заказов</span>
+                </>
+              );
+            }}
+          </NavLink>
+        </div>
+
+        <NavLink to='/' className={styles.logo} aria-label='На главную'>
+          <Logo className={styles.logo} />
+        </NavLink>
+
+        <div className={styles.link_position_last}>
+          <NavLink
+            to='/profile'
+            className={({ isActive }) =>
+              linkClass(isActive || profileDeepActive)
+            }
+          >
+            {({ isActive }) => {
+              const active = isActive || profileDeepActive;
+              return (
+                <>
+                  <ProfileIcon type={active ? 'primary' : 'secondary'} />
+                  <span className='ml-2'>{userName || 'Личный кабинет'}</span>
+                </>
+              );
+            }}
+          </NavLink>
+        </div>
+      </nav>
+    </header>
+  );
+};

@@ -1,24 +1,45 @@
-import { FC, SyntheticEvent, useState } from 'react';
-import { RegisterUI } from '@ui-pages';
+import { FC, useState } from 'react';
+import { useDispatch } from '../../services/store';
+import { register } from '../../services/slices/user';
+import { RegisterUI } from '../../components/ui/pages/register';
+import { useNavigate } from 'react-router-dom';
 
 export const Register: FC = () => {
-  const [userName, setUserName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: SyntheticEvent) => {
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [errorText, setErrorText] = useState<string>('');
+
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
+
+    if (!name || !email || !password) {
+      setErrorText('Заполните все поля');
+      return;
+    }
+
+    dispatch(register({ name, email, password }))
+      .unwrap()
+      .then(() => {
+        navigate('/login', { replace: true });
+      })
+      .catch((err) =>
+        setErrorText(typeof err === 'string' ? err : 'Ошибка регистрации')
+      );
   };
 
   return (
     <RegisterUI
-      errorText=''
+      name={name}
+      setName={setName}
       email={email}
-      userName={userName}
-      password={password}
       setEmail={setEmail}
+      password={password}
       setPassword={setPassword}
-      setUserName={setUserName}
+      errorText={errorText}
       handleSubmit={handleSubmit}
     />
   );

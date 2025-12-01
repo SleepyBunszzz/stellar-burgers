@@ -1,10 +1,12 @@
 .containerMain {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   max-width: 1240px;
   margin-left: auto;
   margin-right: auto;
+  padding-left: 40px;
+  padding-bottom: 80px;
+  overflow: hidden;
 }
 
 .titleBox {
@@ -18,17 +20,42 @@
 .main {
   display: flex;
   justify-content: space-between;
-  height: 100%;
   width: 1240px;
+  gap: 40px;
+  height: calc(100vh - 160px);
+  margin: 0 auto;
+  box-sizing: border-box;
   overflow: hidden;
 }
 
 .columnOrders {
   width: 608px;
-}
-
-.columnInfo {
+  height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  width: 580px;
+
+  padding-right: 8px;
+  padding-bottom: 24px;
+  scrollbar-gutter: stable;
 }
+
+.columnOrders::-webkit-scrollbar { width: 6px; }
+.columnOrders::-webkit-scrollbar-track { background: transparent; border-radius: 0; }
+.columnOrders::-webkit-scrollbar-thumb { background: #8e8ec2; border-radius: 0; }
+.columnOrders { scrollbar-width: thin; scrollbar-color: #8e8ec2 transparent; }
+
+.columnInfo {
+  width: 580px;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding-bottom: 24px;
+  scrollbar-gutter: stable;
+}
+
+
+.columnInfo::-webkit-scrollbar { width: 6px; }
+.columnInfo::-webkit-scrollbar-track { background: transparent; border-radius: 0; }
+.columnInfo::-webkit-scrollbar-thumb { background: #8e8ec2; border-radius: 0; }
+.columnInfo { scrollbar-width: thin; scrollbar-color: #8e8ec2 transparent; }
