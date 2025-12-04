@@ -19,7 +19,7 @@ describe('ingredients reducer', () => {
     it('should handle pending state', () => {
       const action = { type: fetchIngredients.pending.type };
       const state = reducer(initialState, action);
-      
+
       expect(state).toEqual({
         ...initialState,
         loading: true,
@@ -40,7 +40,8 @@ describe('ingredients reducer', () => {
           price: 1255,
           image: 'https://code.s3.yandex.net/react/code/bun-02.png',
           image_large: 'https://code.s3.yandex.net/react/code/bun-02-large.png',
-          image_mobile: 'https://code.s3.yandex.net/react/code/bun-02-mobile.png'
+          image_mobile:
+            'https://code.s3.yandex.net/react/code/bun-02-mobile.png'
         },
         {
           _id: '643d69a5c3f7b9001cfa0941',
@@ -52,8 +53,10 @@ describe('ingredients reducer', () => {
           calories: 4242,
           price: 424,
           image: 'https://code.s3.yandex.net/react/code/meat-01.png',
-          image_large: 'https://code.s3.yandex.net/react/code/meat-01-large.png',
-          image_mobile: 'https://code.s3.yandex.net/react/code/meat-01-mobile.png'
+          image_large:
+            'https://code.s3.yandex.net/react/code/meat-01-large.png',
+          image_mobile:
+            'https://code.s3.yandex.net/react/code/meat-01-mobile.png'
         },
         {
           _id: '643d69a5c3f7b9001cfa0942',
@@ -65,18 +68,20 @@ describe('ingredients reducer', () => {
           calories: 30,
           price: 90,
           image: 'https://code.s3.yandex.net/react/code/sauce-02.png',
-          image_large: 'https://code.s3.yandex.net/react/code/sauce-02-large.png',
-          image_mobile: 'https://code.s3.yandex.net/react/code/sauce-02-mobile.png'
+          image_large:
+            'https://code.s3.yandex.net/react/code/sauce-02-large.png',
+          image_mobile:
+            'https://code.s3.yandex.net/react/code/sauce-02-mobile.png'
         }
       ];
-      
+
       const action = {
         type: fetchIngredients.fulfilled.type,
         payload: mockIngredients
       };
-      
+
       const state = reducer(initialState, action);
-      
+
       expect(state).toEqual({
         loading: false,
         data: mockIngredients,
@@ -90,9 +95,9 @@ describe('ingredients reducer', () => {
         type: fetchIngredients.rejected.type,
         error: { message: 'Network Error' }
       };
-      
+
       const state = reducer(initialState, action);
-      
+
       expect(state).toEqual({
         ...initialState,
         loading: false,
@@ -105,9 +110,9 @@ describe('ingredients reducer', () => {
         type: fetchIngredients.rejected.type,
         error: { message: undefined }
       };
-      
+
       const state = reducer(initialState, action);
-      
+
       expect(state).toEqual({
         ...initialState,
         loading: false,

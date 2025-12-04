@@ -131,7 +131,11 @@ function App() {
           <Route
             path='/ingredients/:id'
             element={
-              <Modal title='Детали ингредиента' onClose={closeModal}>
+              <Modal
+                title='Детали ингредиента'
+                onClose={closeModal}
+                dataCy='ingredient-modal'
+              >
                 <IngredientDetails />
               </Modal>
             }

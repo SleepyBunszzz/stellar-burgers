@@ -8,14 +8,13 @@ export default defineConfig({
     fixturesFolder: 'cypress/fixtures',
     videosFolder: 'cypress/videos',
     screenshotsFolder: 'cypress/screenshots',
-    viewportWidth: 1280,
-    viewportHeight: 720,
+    viewportWidth: 1300,
+    viewportHeight: 800,
     video: false,
     screenshotOnRunFailure: true,
     defaultCommandTimeout: 10000,
     responseTimeout: 30000,
     setupNodeEvents(on, config) {
-      // Можно добавить плагины позже
       return config;
     },
   },

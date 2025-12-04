@@ -4,7 +4,7 @@ describe('rootReducer', () => {
   it('should properly initialize', () => {
     // Проверяем, что редьюсер возвращает объект с ожидаемыми ключами
     const initialState = rootReducer(undefined, { type: '@@INIT' });
-    
+
     expect(initialState).toEqual({
       ingredients: expect.any(Object),
       user: expect.any(Object),
@@ -13,7 +13,7 @@ describe('rootReducer', () => {
       profileFeed: expect.any(Object),
       burgerConstructor: expect.any(Object)
     });
-    
+
     // Проверяем структуру каждого слайса
     expect(initialState.ingredients).toEqual({
       data: [],
@@ -21,7 +21,7 @@ describe('rootReducer', () => {
       error: null,
       fetched: false
     });
-    
+
     expect(initialState.user).toEqual({
       name: null,
       email: null,
@@ -29,7 +29,7 @@ describe('rootReducer', () => {
       loading: false,
       error: null
     });
-    
+
     expect(initialState.burgerConstructor).toEqual({
       bun: null,
       items: []
