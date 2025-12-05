@@ -1,5 +1,3 @@
-/// <reference types="cypress" />
-
 declare global {
   namespace Cypress {
     interface Chainable {
@@ -8,6 +6,7 @@ declare global {
       createOrder(): Chainable<void>;
       login(email?: string, password?: string): Chainable<void>;
       dragIngredient(ingredientName: string): Chainable<void>;
+      loginWithTokens(accessToken?: string, refreshToken?: string): Chainable<void>;
     }
   }
 }
@@ -50,5 +49,15 @@ Cypress.Commands.add('login', (email = 'test@example.com', password = 'password1
 
   cy.url().should('not.include', '/login');
 });
+
+Cypress.Commands.add(
+  'loginWithTokens',
+  (accessToken: string = 'test-access-token', refreshToken: string = 'test-refresh-token') => {
+    cy.setCookie('accessToken', accessToken);
+    cy.window().then((win) => {
+      window.localStorage.setItem('refreshToken', JSON.stringify(refreshToken));
+    });
+  }
+);
 
 export {};

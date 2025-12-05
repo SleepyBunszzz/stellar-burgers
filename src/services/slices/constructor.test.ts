@@ -69,7 +69,7 @@ describe('constructor reducer', () => {
       expect(newState.bun).toEqual(
         expect.objectContaining({
           ...mockBun,
-          cid: expect.any(String)
+          cid: expect.stringMatching(/.+/)
         })
       );
       expect(newState.items).toEqual([]);
@@ -84,7 +84,7 @@ describe('constructor reducer', () => {
       expect(newState.items[0]).toEqual(
         expect.objectContaining({
           ...mockMainIngredient,
-          cid: expect.any(String)
+          cid: expect.stringMatching(/.+/)
         })
       );
     });
@@ -98,7 +98,7 @@ describe('constructor reducer', () => {
       expect(newState.items[0]).toEqual(
         expect.objectContaining({
           ...mockSauceIngredient,
-          cid: expect.any(String)
+          cid: expect.stringMatching(/.+/)
         })
       );
     });
@@ -137,7 +137,6 @@ describe('constructor reducer', () => {
 
   describe('removeIngredient', () => {
     it('should remove ingredient by cid', () => {
-      // Сначала добавляем несколько ингредиентов
       const addAction1 = addIngredient(mockMainIngredient);
       let state = reducer(initialState, addAction1);
       const ingredient1Cid = state.items[0]?.cid || '';
@@ -148,11 +147,8 @@ describe('constructor reducer', () => {
         name: 'Соус фирменный Space Sauce'
       });
       state = reducer(state, addAction2);
-
-      // Проверяем, что оба ингредиента добавлены
       expect(state.items).toHaveLength(2);
 
-      // Удаляем первый ингредиент
       const removeAction = removeIngredient(ingredient1Cid);
       state = reducer(state, removeAction);
 
@@ -175,7 +171,6 @@ describe('constructor reducer', () => {
 
   describe('moveIngredient', () => {
     it('should move ingredient from one position to another', () => {
-      // Добавляем три ингредиента разных типов
       const ingredients: TIngredient[] = [
         { ...mockMainIngredient, _id: '1', name: 'Котлета 1' },
         { ...mockSauceIngredient, _id: '2', name: 'Соус 1' },
@@ -187,20 +182,13 @@ describe('constructor reducer', () => {
         state = reducer(state, addIngredient(ing));
       });
 
-      // Сохраняем исходные названия для проверки
       const originalNames = state.items.map((item) => item.name);
 
-      // Перемещаем первый элемент (индекс 0) на позицию после второго (индекс 2)
       const moveAction = moveIngredient({ from: 0, to: 2 });
       state = reducer(state, moveAction);
 
-      // Проверяем новый порядок
       const newNames = state.items.map((item) => item.name);
-      expect(newNames).toEqual([
-        originalNames[1],
-        originalNames[2],
-        originalNames[0]
-      ]);
+      expect(newNames).toEqual([originalNames[1], originalNames[2], originalNames[0]]);
     });
 
     it('should not change state when from equals to', () => {
@@ -239,7 +227,6 @@ describe('constructor reducer', () => {
 
   describe('clearConstructor', () => {
     it('should clear all ingredients and bun', () => {
-      // Сначала добавляем булку и несколько ингредиентов
       const bunAction = addIngredient(mockBun);
       let state = reducer(initialState, bunAction);
 
@@ -249,11 +236,9 @@ describe('constructor reducer', () => {
       const sauceAction = addIngredient(mockSauceIngredient);
       state = reducer(state, sauceAction);
 
-      // Проверяем, что все добавлено
       expect(state.bun).not.toBeNull();
       expect(state.items).toHaveLength(2);
 
-      // Очищаем конструктор
       const clearAction = clearConstructor();
       state = reducer(state, clearAction);
 
