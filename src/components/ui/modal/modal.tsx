@@ -5,12 +5,13 @@ import { TModalUIProps } from './type';
 import { ModalOverlayUI } from '@ui';
 
 export const ModalUI: FC<TModalUIProps> = memo(
-  ({ title, onClose, children }) => (
+  ({ title, onClose, children, dataCy }) => (
     <>
       <div
         className={styles.modal}
         role='dialog'
         aria-modal='true'
+        data-cy={dataCy ?? 'modal'} // контейнер модалки (например, "ingredient-modal")
         onMouseDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
       >
@@ -22,6 +23,7 @@ export const ModalUI: FC<TModalUIProps> = memo(
             className={styles.button}
             type='button'
             aria-label='Закрыть'
+            data-cy='modal-close' // крестик
             onClick={onClose}
           >
             <CloseIcon type='primary' />
@@ -30,7 +32,8 @@ export const ModalUI: FC<TModalUIProps> = memo(
         <div className={styles.content}>{children}</div>
       </div>
 
-      <ModalOverlayUI onClick={onClose} />
+      {/* полупрозрачный фон модалки */}
+      <ModalOverlayUI onClick={onClose} data-cy='modal-overlay' />
     </>
   )
 );

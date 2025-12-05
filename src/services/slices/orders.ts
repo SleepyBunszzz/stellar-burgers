@@ -6,6 +6,7 @@ import {
   createOrderApi
 } from '../../utils/burger-api';
 import type { TOrder } from '../../utils/types';
+import { clearConstructor } from './constructor';
 
 type OrdersState = {
   orders: TOrder[];
@@ -23,11 +24,13 @@ const initialState: OrdersState = {
   lastOrderIngredients: undefined
 };
 
+// Загрузка заказов пользователя
 export const fetchOrders = createAsyncThunk<TOrder[]>(
   'orders/fetchMine',
   getOrdersApi
 );
 
+// Загрузка заказа по номеру
 export const fetchOrderByNumber = createAsyncThunk<TOrder | undefined, number>(
   'orders/fetchOrderByNumber',
   async (number) => {
@@ -36,11 +39,13 @@ export const fetchOrderByNumber = createAsyncThunk<TOrder | undefined, number>(
   }
 );
 
+// ✅ Создание заказа + автоматическая очистка конструктора
 export const createOrder = createAsyncThunk<
   { order: TOrder; name: string },
   string[]
->('orders/createOrder', async (ingredientIds) => {
+>('orders/createOrder', async (ingredientIds, { dispatch }) => {
   const res = await createOrderApi(ingredientIds);
+  dispatch(clearConstructor());
   return res;
 });
 
@@ -54,6 +59,7 @@ const ordersSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // --- Загрузка всех заказов ---
       .addCase(fetchOrders.pending, (state) => {
         state.orderRequest = true;
         state.error = null;
@@ -67,6 +73,7 @@ const ordersSlice = createSlice({
         state.error = action.error.message || 'Не удалось загрузить заказы';
       });
 
+    // --- Создание заказа ---
     builder
       .addCase(createOrder.pending, (state, action) => {
         state.orderRequest = true;
@@ -86,6 +93,7 @@ const ordersSlice = createSlice({
         state.error = action.error.message || 'Не удалось создать заказ';
       });
 
+    // --- Получение заказа по номеру ---
     builder
       .addCase(fetchOrderByNumber.pending, (state) => {
         state.orderRequest = true;

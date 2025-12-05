@@ -6,8 +6,8 @@ import { IngredientsCategoryUI } from '../ui/ingredients-category';
 
 export const IngredientsCategory = forwardRef<
   HTMLUListElement,
-  TIngredientsCategoryProps
->(({ title, titleRef, ingredients }, ref) => {
+  TIngredientsCategoryProps & React.ComponentPropsWithoutRef<'ul'> // ← добавить
+>(({ title, titleRef, ingredients, ...rest }, ref) => {
   const burgerConstructor = useSelector((s) => s.burgerConstructor);
 
   const ingredientsCounters = useMemo(() => {
@@ -27,6 +27,7 @@ export const IngredientsCategory = forwardRef<
       ingredients={ingredients}
       ingredientsCounters={ingredientsCounters}
       ref={ref}
+      listProps={rest}
     />
   );
 });
